@@ -1,216 +1,90 @@
-# AGENTS.md — Operational Brief (Codex‑ready)
+
+---
+
+## ✅ AGENTS.md (v1.3) — sostituisci integralmente con questo
+
+```markdown
+# AGENTS.md — Operational Brief (Codex‑ready, v1.3)
 
 Repo: https://github.com/antonio86itna/am-easy-custom-booking  
 Baseline: **v0.1.0** (starter UI). Target next release: **v0.2.0**.
 
 ## Mission
-Develop and maintain the **AM Easy Custom Booking** plugin for Costabilerent, following WordPress standards for security, performance, and excellent UX. Write modern, testable, and modular code.
-
-## Architecture (snapshot)
-- Custom WP Plugin (namespace `AMCB\*`), front pages managed by **shortcodes + Elementor widgets**.
-- Data: custom tables for vehicles, prices, reservations, services, insurance, locations, coupons, logs.
-- 5-step checkout wizard. Payments with Stripe Payment Intents (full or % deposit).
-- User session with 15-minute soft-hold on availability.
-- Mapbox for locations or home delivery (limited autocomplete for Ischia).
-- Multilingual HTML email (EN/IT); PDF voucher with QR code (to be implemented).
-- WPML-ready and cache-safe (no cache on search/results/checkout/dashboard).
-
-## Reservation states
-`pending → paid → confirmed → in_progress → completed` (+ `canceled`, `refunded`, `abandoned`, `expired_hold`).
-
-## Shortcode/Key Widget
-- `[amcb_search]` – Search form.
-- `[amcb_results]` – List of available vehicles.
-- `[amcb_checkout]` – Wizard.
-- `[amcb_dashboard]` – Customer area.
-- `[amcb_tariffe]` – Pricing table.
-Each shortcode must have an equivalent **Elementor Widget**.
-
-## Fundamental Rules
-- **Single Garage**: Centralized inventory. Availability calculated per day over a range of dates, including blocks and active reservations.
-- **Customer Country Required** (step 3) for dynamic localization.
-- **GDPR**: Checkboxes for privacy, general terms, and rental conditions.
-- **Cache**: Avoid caching on dynamic views; use `DONOTCACHEPAGE` when necessary.
-- **Security**: Nonces, capability checks, escaping, prepared statements.
-- **i18n**: All strings with `__()`; email and options mapped in `wpml-config.xml`.
-- **Branding**: Totaliweb in admin, email footer, and code.
-
-## North Star
-A complete booking system for Costabilerent:
-- Search → Results → 5‑step Checkout → Stripe (full/deposit) → Confirmation
-- **Single garage** (central inventory); no per‑location stock
-- Customer dashboard, i18n template emails, PDF voucher with QR, cron/automation, report
-- REST‑first; Elementor widgets; WPML compatible
+Deliver a complete booking system for Costabilerent (cars/scooters) with a **single garage**. Follow WordPress standards (security, performance, i18n), Elementor widgets, REST‑first, Stripe, Mapbox, WPML.
 
 ## Language & i18n
-- Default language: **English** (both backend and frontend).
-- All strings must use `__()` / `_e()` with domain `amcb`.
-- Translations: `.po/.mo` or WPML String Translation.
-- Keep `wpml-config.xml` updated to expose plugin options.
+- Default language: **English** (frontend + backend).
+- Wrap every string with `__()` / `_e()` (domain `amcb`).
+- Provide translations via `.po/.mo` or WPML String Translation.
+- Keep `wpml-config.xml` in sync to expose plugin options.
+
+## Architecture
+- Custom WP plugin (`AMCB\*`), frontend via **shortcodes + Elementor widgets**.
+- 5‑step checkout wizard; 15‑minute session hold (transients).
+- REST API for search/pricing/checkout/payment.
+- Email HTML templates (EN/IT); PDF voucher with QR (saved in uploads).
+- Mapbox for locations and home delivery pin (Ischia only, limited geofencing).
+- Cache‑safe: Results/Checkout/Dashboard must not be cached.
 
 ## Data model (custom tables)
-- `amcb_vehicles`, `amcb_vehicle_prices`, `amcb_vehicle_blocks`
-- `amcb_services`, `amcb_insurances`
-- `amcb_bookings`, `amcb_booking_items`, `amcb_booking_totals`
-- `amcb_coupons`, `amcb_locations`, `amcb_abandoned`, `amcb_logs`
+`amcb_vehicles`, `amcb_vehicle_prices`, `amcb_vehicle_blocks`,  
+`amcb_services`, `amcb_insurances`,  
+`amcb_bookings`, `amcb_booking_items`, `amcb_booking_totals`,  
+`amcb_coupons`, `amcb_locations`, `amcb_abandoned`, `amcb_logs`.
 
 ## Booking states
-`pending → paid → confirmed → in_progress → completed`  
-Extra: `canceled`, `refunded`, `abandoned`, `expired_hold`.
+`pending → paid → confirmed → in_progress → completed` (+ `canceled`, `refunded`, `abandoned`, `expired_hold`).
 
 ## REST endpoints (v0.2.0)
 - `GET  /amcb/v1/search?start_date&end_date&pickup&dropoff&home_delivery=0|1`
-- `POST /amcb/v1/checkout/price`
-- `POST /amcb/v1/checkout/prepare`
-- `POST /amcb/v1/checkout/intent`
-- `POST /amcb/v1/stripe/webhook`
+- `POST /amcb/v1/checkout/price` → **seasonal segmented** breakdown (see rules)
+- `POST /amcb/v1/checkout/prepare` → create pending booking + start hold
+- `POST /amcb/v1/checkout/intent` → Stripe Payment Intent (full/deposit)
+- `POST /amcb/v1/stripe/webhook` → intent success ⇒ `paid→confirmed` + `booking_code`
 - `GET  /amcb/v1/bookings/me` (auth)
-- `GET  /amcb/v1/bookings/{id}/voucher` (auth)
+- `GET  /amcb/v1/bookings/{id}/voucher` (auth) → PDF
 
-## Pricing rules (server‑side) — Seasonal & Custom Rates
-Inputs
-vehicle_id, start_date, end_date (+ opzionale pickup_time, dropoff_time)
-pickup, dropoff, home_delivery (boolean, free)
-services[] (IDs), insurance_id (or “default”), coupon_code?
-payment_mode = full | deposit
-currency = EUR (default)
-Day count
-days = number of calendar days in [start_date, end_date) → end exclusive.
-If “Late Return Rule” is enabled and dropoff_time > 10:00, add +1 day for pricing purposes only.
-Seasonal price selection (per‑day)
-selection (per-day)
-Rates live in amcb_vehicle_prices as a range [date_from, date_to] with price_per_day + optional min_days, max_days, long_rent_json.
-For each day in the period:
-Select the rate line with date_from <= day <= date_to
-If multiple lines match, use the one with the most recent (more specific) date_from.
-No coverage rule: If a day has no rate coverage → NO_RATE_COVERAGE error. Vehicle search/display must hide the vehicle or display a consistent message.
-Base total = sum of all daily price_per_days (not a single rate * days). In practice, if the range spans multiple seasons, the total reflects the mix.
-**Vehicle limits**
-Validate duration limits (min/max days). If limits are defined by season (columns in vehicle_prices), the booking is valid only if the entire range meets the limits of all segments crossed.
-If you prefer global limits per vehicle, we will add vehicles.rent_min_days/rent_max_days (backlog) in the future.
-days = diff(end, start)
-base = days * seasonal daily price
-insurance = days * selected daily insurance
-services = sum(flat + per_day * days)
-long-rent discounts + coupons
-grand_total = base + insurance + services - discounts
-**Long-rent discounts**
-long_rent_json (JSON) field on the seasonal price list or vehicle; recommended format:
-[
-  {"min_days": 3,  "percent": 5},
-  {"min_days": 7,  "percent": 10},
-  {"min_days": 14, "percent": 15}
-]
-Apply only one band (the highest compatible with days).
-Base for discount = base_total only (does not include insurance/services).
-long_rent_discount = round(base_total * percent/100, 2).
-**Insurance**
-amcb_insurances: daily_price and is_default by vehicle.
-insurance_total = days * selected_insurance.daily_price.
-**Services**
-amcb_services: charge_type = flat | per_day, price.
-services_total = Σ (flat_price) + Σ (per_day_price * days).
-**Coupons**
-**Grand total & deposit**
-grand_total = subtotal_before_coupon - coupon_discount (min 0).
-Deposit mode: global percentage from settings (e.g., 30%).
-deposit_amount = round(grand_total * deposit_percent/100, 2)
-to_collect = grand_total - deposit_amount (displayed at checkout and confirmation).
-Full mode: deposit_amount = grand_total, to_collect = 0.
-**Other rules**
-Home delivery: free (no surcharge).
-Cancellation policy (per vehicle): if enabled and now <= start_date - cancel_days, customer cancellation → 100% refund of the amount paid; otherwise non-refundable (admin/manager can force partial/full refund).
-amcb_coupons: type = percent|fixed, scope = all|auto|scooter|vehicles|dates, vehicles_json (IDs), date_from/to, min_days, active.
-Validate scope and constraints; apply on subtotal:
-subtotal_before_coupon = base_total - long_rent_discount + insurance_total + services_total.
-coupon_discount = (percent ? subtotal * p/100 : fixed) with floor at >= 0.
-Currencies/rounding: EUR, two decimals (round(..., 2)).
-**POST /amcb/v1/checkout/price:**
-Calculates the breakdown by seasonal segments. If NO_RATE_COVERAGE occurs, the endpoint responds 422 with payload {code:"NO_RATE_COVERAGE", missing_dates:[...dates...]}.
+### Pricing rules (server‑side) — Seasonal & Custom Rates
+**Inputs**: `vehicle_id`, `start_date`, `end_date` (end exclusive), optional `pickup_time/dropoff_time`, `pickup`, `dropoff`, `home_delivery`, `services[]`, `insurance_id/default`, `coupon_code?`, `payment_mode=full|deposit`, `currency=EUR`.
 
-## Data and tables (to be implemented in future versions)
-- `amcb_vehicles (id, name, type, stock_total, featured, featured_priority, …)`
-- `amcb_vehicle_prices (vehicle_id, date_from, date_to, price_per_day, …)`
-- `amcb_vehicle_blocks (vehicle_id, start_date, end_date, qty, …)`
-- `amcb_services (name, charge_type: flat/per_day, price, vehicle_type, active)`
-- `amcb_insurances (vehicle_id, name, daily_price, franchise, is_default)`
-- `amcb_bookings (booking_code, user_id, email, phone, country, status, payment_mode, totals…)`
-- `amcb_booking_items (booking_id, vehicle_id, start_date, end_date, pickup, dropoff, home_delivery, …)`
-- `amcb_booking_totals (booking_id, base_total, insurance_total, services_total, discount_total, grand_total)`
-- `amcb_coupons (code, type, amount, scope, vehicles_json, date_from/to, min_days, active)`
-- `amcb_locations (slug, name, address, lat, lng)`
-- `amcb_abandoned (email, name, vehicle_name, start_date, end_date, token, emailed_at, converted_booking_id)`
-- `amcb_logs (channel, level, message, context, created_at)`
+**Day count**: calendar days in `[start_date, end_date)`; if **Late Return Rule** and `dropoff_time > 10:00` add **+1** day (pricing only).
 
-## Immediate TODOs
-1. Implement tables with `dbDelta` and migrations (Install/Activator).
-2. Build Availability with efficient SQL (range overlap).
-3. Register additional Elementor widgets (Results, Checkout, Dashboard, Rates).
-4. Add complete Settings (depot, policies, locations, mapbox).
-5. Stripe integration (intent, webhook) and unique booking_code generation.
-6. Sessions + 15-minute timer and auto-expire.
-7. “Abandoned” email after 1 hour (tracking attribution).
+**Seasonal rates** (`amcb_vehicle_prices`):
+- For each day, pick the matching `[date_from, date_to]` rate. If multiple match, use the most specific (`date_from` latest).
+- No coverage for any day ⇒ error `NO_RATE_COVERAGE` (422), include `missing_dates:[]`.
+- `base_total` = sum of **daily** prices across seasons (not a single rate * days).
+- Validate **min/max days** (per‑season or global).
 
-## Milestones (create small PRs)
+**Long‑rent discounts**: single highest tier (from `long_rent_json`) applied on **base_total**.
+
+**Insurance**: `insurance_total = days * daily_price`.
+
+**Services**: `services_total = Σ(flat) + Σ(per_day * days)`.
+
+**Coupons**: scope‐aware; apply on  
+`subtotal_before_coupon = base_total - long_rent_discount + insurance_total + services_total`.
+
+**Grand total & deposit**:
+`grand_total = subtotal_before_coupon - coupon_discount` (≥ 0).  
+If `payment_mode=deposit`, compute `deposit_amount` from plugin setting; `to_collect = grand_total - deposit_amount`.
+
+**Output** must include: `days`, `segments[]`, `base_total`, `long_rent_discount`, `insurance_total`, `services_total`, `coupon_discount`, `grand_total`, `deposit_amount`, `to_collect`, `currency`.
+
+## Milestones (small PRs)
 1. **PR‑1:** Migrations (dbDelta) + Admin Tools + Demo + roles + cron
-2. **PR‑2:** Availability engine (range overlap) + Results shows only available
+2. **PR‑2:** Availability engine (range overlap) + Results (only available)
 3. **PR‑3:** Elementor widgets (Results, Checkout, Dashboard, Rates)
-4. **PR‑4:** REST + pricing breakdown + 15' session hold (transients)
-5. **PR‑5:** Stripe (Payment Intents full/deposit) + webhook (paid→confirmed)
-6. **PR‑6:** PDF voucher + QR (Dompdf + QR lib) + link in dashboard
+4. **PR‑4:** REST + pricing breakdown + 15' session hold
+5. **PR‑5:** Stripe Payment Intents (full/deposit) + webhook (paid→confirmed + booking_code)
+6. **PR‑6:** PDF voucher + QR (Dompdf + QR lib) + dashboard link
 7. **PR‑7:** Cron automations + email templates (EN/IT) + status flips
 
-## Step-by-step plan (starting from v0.1.0)
-**M1 – Migrations + Tools + Demo Data**
-- Add `src/Install/Activator.php` with `dbDelta()` for all tables.
-- Admin → AMCB → **Tools**: “DB Migrations” and “Create Demo Data” buttons (Fiat Panda + Ischia locations).
-- Roles: `amcb_customer`, `amcb_manager`; cron: `amcb_cron_minutely`, `amcb_cron_hourly`.
-
-**M2 – Availability engine**
-- `src/Front/Availability.php`: Calculate available units for each day in the range:
-- sum of active reservations (`paid/confirmed/in_progress`) + `vehicle_blocks`
-- `available = stock_total - max(occupancyPerDay)`; >0 ⇒ available.
-
-**M3 – Dynamic Results**
-- `[amcb_results]`: Show only vehicles available for `start_date/end_date` with price/day (select from `vehicle_prices`).
-- Sort: featured desc, featured_priority desc, name asc.
-
-**M4 – Price and Breakdown Calculation**
-- Implements calculation: base (days * price/day) + insurance (+/day) + services (flat or per_day * days) − long discounts − coupons.
-- Save in `amcb_booking_totals`.
-
-**M5 – Checkout Wizard + session/hold (15 minutes)**
-- `src/Front/Session.php` via transients + `amcb_sid` cookie.
-- Upon confirmation, step 4: create **booking** in `pending` + **booking_items**; mental hold (does not deduct stock, but avoids double bidding with the same user).
-- Abandoned: if payment is not made within 1 hour → reminder email; hold expires in 15 minutes.
-
-**M6 – Stripe Payment Intents**
-- Server: create intent (full/deposit), manage post-webhook capture.
-- Webhook: `payment_intent.succeeded` ⇒ `paid` + generate unique progressive `booking_code` (`RC-YYYY-000001`).
-- User self-registration (if new email), send credentials via email.
-
-**M7 – Email and PDF**
-- EN/IT templates; confirmation, pre-pickup, post-return; send to admin/manager/customer.
-- PDF voucher with QR code (booking code); link in dashboard.
-
-**M8 – Customer Dashboard**
-- Reservation list (future, past, payment status), details, cancellation request (respecting policy).
-- Automatic status flip with cron: `confirmed → in_progress` at startup, `in_progress → completed` upon return.
-
-**M9 – Mapbox, Calendar, Reports, Coupons**
-- Mapbox: locations/addresses; for home delivery, pin to customer address.
-- Calendar timeline/list (day's departures/returns).
-- Reports & CSV, discount codes.
-
 ## Definition of Done
-- PHPCS passes; i18n complete; prepared SQL only
-- Security: nonce/capabilities, sanitize input, escape output
-- Tests: manual flow + README/AGENTS updated
-- No cache issues on dynamic pages
-- Everything translated (`__()/_e()`); no non-i18n hardcoded text
-- No unprepared queries
-- README updated; CHANGELOG entry
-- Manual testing documented (see README “QA checklist”)
+- PHPCS passes (WordPress standard), prepared SQL only
+- i18n complete (English default), no hard‑coded untranslated strings
+- Nonce/capabilities for sensitive actions; sanitize input, escape output
+- Manual E2E test (search → results → checkout UI)
+- README/AGENTS updated with changes
 
 ## Conventions
 - Branches: `feat/*`, `fix/*`, `chore/*`, `docs/*`
