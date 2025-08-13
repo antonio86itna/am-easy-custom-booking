@@ -127,11 +127,57 @@ grand_total = base + insurance + services - discounts
 6. **PR‑6:** PDF voucher + QR (Dompdf + QR lib) + link in dashboard
 7. **PR‑7:** Cron automations + email templates (EN/IT) + status flips
 
+## Step-by-step plan (starting from v0.1.0)
+**M1 – Migrations + Tools + Demo Data**
+- Add `src/Install/Activator.php` with `dbDelta()` for all tables.
+- Admin → AMCB → **Tools**: “DB Migrations” and “Create Demo Data” buttons (Fiat Panda + Ischia locations).
+- Roles: `amcb_customer`, `amcb_manager`; cron: `amcb_cron_minutely`, `amcb_cron_hourly`.
+
+**M2 – Availability engine**
+- `src/Front/Availability.php`: Calculate available units for each day in the range:
+- sum of active reservations (`paid/confirmed/in_progress`) + `vehicle_blocks`
+- `available = stock_total - max(occupancyPerDay)`; >0 ⇒ available.
+
+**M3 – Dynamic Results**
+- `[amcb_results]`: Show only vehicles available for `start_date/end_date` with price/day (select from `vehicle_prices`).
+- Sort: featured desc, featured_priority desc, name asc.
+
+**M4 – Price and Breakdown Calculation**
+- Implements calculation: base (days * price/day) + insurance (+/day) + services (flat or per_day * days) − long discounts − coupons.
+- Save in `amcb_booking_totals`.
+
+**M5 – Checkout Wizard + session/hold (15 minutes)**
+- `src/Front/Session.php` via transients + `amcb_sid` cookie.
+- Upon confirmation, step 4: create **booking** in `pending` + **booking_items**; mental hold (does not deduct stock, but avoids double bidding with the same user).
+- Abandoned: if payment is not made within 1 hour → reminder email; hold expires in 15 minutes.
+
+**M6 – Stripe Payment Intents**
+- Server: create intent (full/deposit), manage post-webhook capture.
+- Webhook: `payment_intent.succeeded` ⇒ `paid` + generate unique progressive `booking_code` (`RC-YYYY-000001`).
+- User self-registration (if new email), send credentials via email.
+
+**M7 – Email and PDF**
+- EN/IT templates; confirmation, pre-pickup, post-return; send to admin/manager/customer.
+- PDF voucher with QR code (booking code); link in dashboard.
+
+**M8 – Customer Dashboard**
+- Reservation list (future, past, payment status), details, cancellation request (respecting policy).
+- Automatic status flip with cron: `confirmed → in_progress` at startup, `in_progress → completed` upon return.
+
+**M9 – Mapbox, Calendar, Reports, Coupons**
+- Mapbox: locations/addresses; for home delivery, pin to customer address.
+- Calendar timeline/list (day's departures/returns).
+- Reports & CSV, discount codes.
+
 ## Definition of Done
 - PHPCS passes; i18n complete; prepared SQL only
 - Security: nonce/capabilities, sanitize input, escape output
 - Tests: manual flow + README/AGENTS updated
 - No cache issues on dynamic pages
+- Everything translated (`__()/_e()`); no non-i18n hardcoded text
+- No unprepared queries
+- README updated; CHANGELOG entry
+- Manual testing documented (see README “QA checklist”)
 
 ## Conventions
 - Branches: `feat/*`, `fix/*`, `chore/*`, `docs/*`
