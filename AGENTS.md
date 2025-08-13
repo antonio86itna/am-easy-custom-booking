@@ -85,7 +85,7 @@ Select the rate line with date_from <= day <= date_to
 If multiple lines match, use the one with the most recent (more specific) date_from.
 No coverage rule: If a day has no rate coverage → NO_RATE_COVERAGE error. Vehicle search/display must hide the vehicle or display a consistent message.
 Base total = sum of all daily price_per_days (not a single rate * days). In practice, if the range spans multiple seasons, the total reflects the mix.
-Vehicle limits
+**Vehicle limits**
 Validate duration limits (min/max days). If limits are defined by season (columns in vehicle_prices), the booking is valid only if the entire range meets the limits of all segments crossed.
 If you prefer global limits per vehicle, we will add vehicles.rent_min_days/rent_max_days (backlog) in the future.
 days = diff(end, start)
@@ -94,6 +94,39 @@ insurance = days * selected daily insurance
 services = sum(flat + per_day * days)
 long-rent discounts + coupons
 grand_total = base + insurance + services - discounts
+**Long-rent discounts**
+long_rent_json (JSON) field on the seasonal price list or vehicle; recommended format:
+[
+  {"min_days": 3,  "percent": 5},
+  {"min_days": 7,  "percent": 10},
+  {"min_days": 14, "percent": 15}
+]
+Apply only one band (the highest compatible with days).
+Base for discount = base_total only (does not include insurance/services).
+long_rent_discount = round(base_total * percent/100, 2).
+**Insurance**
+amcb_insurances: daily_price and is_default by vehicle.
+insurance_total = days * selected_insurance.daily_price.
+**Services**
+amcb_services: charge_type = flat | per_day, price.
+services_total = Σ (flat_price) + Σ (per_day_price * days).
+**Coupons**
+**Grand total & deposit**
+grand_total = subtotal_before_coupon - coupon_discount (min 0).
+Deposit mode: global percentage from settings (e.g., 30%).
+deposit_amount = round(grand_total * deposit_percent/100, 2)
+to_collect = grand_total - deposit_amount (displayed at checkout and confirmation).
+Full mode: deposit_amount = grand_total, to_collect = 0.
+**Other rules**
+Home delivery: free (no surcharge).
+Cancellation policy (per vehicle): if enabled and now <= start_date - cancel_days, customer cancellation → 100% refund of the amount paid; otherwise non-refundable (admin/manager can force partial/full refund).
+amcb_coupons: type = percent|fixed, scope = all|auto|scooter|vehicles|dates, vehicles_json (IDs), date_from/to, min_days, active.
+Validate scope and constraints; apply on subtotal:
+subtotal_before_coupon = base_total - long_rent_discount + insurance_total + services_total.
+coupon_discount = (percent ? subtotal * p/100 : fixed) with floor at >= 0.
+Currencies/rounding: EUR, two decimals (round(..., 2)).
+**POST /amcb/v1/checkout/price:**
+Calculates the breakdown by seasonal segments. If NO_RATE_COVERAGE occurs, the endpoint responds 422 with payload {code:"NO_RATE_COVERAGE", missing_dates:[...dates...]}.
 
 ## Data and tables (to be implemented in future versions)
 - `amcb_vehicles (id, name, type, stock_total, featured, featured_priority, …)`
