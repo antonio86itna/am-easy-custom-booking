@@ -14,7 +14,7 @@ class Shortcodes {
         ob_start(); ?>
         <section class="amcb-search-wrap">
           <div class="amcb-card">
-            <h2 class="amcb-title"><?php echo esc_html__('Noleggia un'auto o scooter a Ischia','amcb'); ?></h2>
+            <h2 class="amcb-title"><?php echo esc_html__('Noleggia un auto o scooter a Ischia','amcb'); ?></h2>
             <form class="amcb-form" action="<?php echo esc_url( home_url('/risultati') ); ?>" method="get">
               <div class="amcb-grid">
                 <label><?php _e('Data di ritiro','amcb'); ?><input type="date" name="start_date" required></label>
@@ -104,7 +104,7 @@ class Shortcodes {
           </div>
           <div class="amcb-step amcb-step-4" hidden>
             <h2><?php _e('Step 4: Riepilogo e Pagamento','amcb'); ?></h2>
-            <label><input type="radio" name="paymode" checked> <?php _e('Paga l'intero importo','amcb'); ?></label>
+            <label><input type="radio" name="paymode" checked> <?php _e('Paga intero importo','amcb'); ?></label>
             <label><input type="radio" name="paymode"> <?php _e('Paga un deposito (30%)','amcb'); ?></label>
             <div class="amcb-terms">
               <label><input type="checkbox" required> <?php _e('Ho letto e accetto la Privacy Policy e i Termini','amcb'); ?></label>
