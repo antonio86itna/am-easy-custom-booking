@@ -82,7 +82,9 @@ Deposit mode: `deposit_amount = round(grand_total * deposit_percent/100, 2)`, `t
   "currency": "EUR"
 }
 
-Roadmap to v0.2.0 (PR sequence)
+
+##Roadmap to v0.2.0 (PR sequence)
+
 Migrations + Tools + Demo (dbDelta, roles, cron, demo data)
 
 Availability engine (date‑range overlap & central stock)
