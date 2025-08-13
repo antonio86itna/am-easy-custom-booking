@@ -1,66 +1,54 @@
-# AM Easy Custom Booking (Totaliweb) — Dev Guide
+# AM Easy Custom Booking (Totaliweb) — Developer Guide (v1.2)
 
-Plugin WordPress personalizzato per **Costabilerent**.  
-Base: v0.1.0 con shortcode/widget e UI; sviluppo a step verso il sistema completo.
+**Baseline:** v0.1.0 (starter). We will evolve to v0.2.0 with incremental PRs.
 
 Repo: https://github.com/antonio86itna/am-easy-custom-booking
 
-## Requisiti
+## Goals
+Custom WordPress booking plugin for **Costabilerent** (car & scooter).
+- Search → Results → 5‑step Checkout → Stripe (full/deposit) → Confirmation
+- **Single garage** inventory (central stock, no per‑location stock)
+- Customer Dashboard, Email templates (i18n), PDF voucher with QR
+- Mapbox pickup points, Coupons, Calendar, Reports
+- REST‑first backend
+
+## Requirements
 - WordPress 6.5+, PHP 8.1–8.3
 - Elementor Pro
-- (Opz.) Composer (Stripe SDK), WPML
+- Optional: Composer (for Stripe/Dompdf/QR), WPML
 
-## Installazione rapida
-1. Copia la cartella `am-easy-custom-booking` in `wp-content/plugins/`.
-2. Attiva il plugin.
-3. Impostazioni → **AMCB**: chiavi Stripe/Mapbox, deposito %, link policy.
-4. Pagine:
-   - Home: `[amcb_search]`
-   - Risultati: `[amcb_results]`
+## Quick install
+1. Copy `am-easy-custom-booking` into `wp-content/plugins/` and activate it.
+2. Settings → **AMCB**: set Stripe/Mapbox keys, deposit %, policy links.
+3. Pages:
+   - Home: `[amcb_search]` (or Elementor widget **AMCB – Search**)
+   - Results: `[amcb_results]`
    - Checkout: `[amcb_checkout]`
    - Dashboard: `[amcb_dashboard]`
-   - Tariffe: `[amcb_tariffe]`
+   - Rates: `[amcb_tariffe]`
 
-> La v0.1.0 fornisce UI di base e hook per evolvere. Il piano di lavoro è in **AGENTS.md**.
+## Coding standards
+- WPCS/PHPCS:  
+  `phpcs -p --standard=WordPress --extensions=php am-easy-custom-booking.php src`
+- i18n: English is the **default** language. Wrap all strings with `__()`/`_e()` and domain `amcb`. Translations via `.po/.mo` or WPML.
 
-## Struttura
-am-easy-custom-booking.php # bootstrap plugin
-src/ # codice PHP (namespaces AMCB*)
-assets/css|js/ # frontend
-templates/emails/{it,en}/ # email HTML
-languages/ # i18n .pot
-wpml-config.xml # mapping WPML
+## Dynamic pages and caching
+Exclude **Results**, **Checkout**, **Dashboard** from any page‑cache/fragment‑cache.
 
-## Lint e standard
-- PHPCS (WordPress): `phpcs -p --standard=WordPress --extensions=php am-easy-custom-booking.php src`
-- EditorConfig suggerito:
-root = true
-[*]
-end_of_line = lf
-insert_final_newline = true
-charset = utf-8
-indent_style = space
-indent_size = 4
+## Roadmap to v0.2.0 (PR sequence)
+1. **Migrations + Tools + Demo** (dbDelta, roles, cron, demo data)
+2. **Availability engine** (date‑range overlap & central stock)
+3. **Results** (only available vehicles; seasonal daily price)
+4. **Pricing** (base + insurance + add‑ons + long‑rent discounts + coupons)
+5. **Checkout + 15' session hold** (pending booking; abandoned capture)
+6. **Stripe Payment Intents** (full/deposit) + **Webhook**
+7. **PDF voucher + QR** (stored in uploads; link in dashboard)
+8. **Cron & Emails** (pre‑pickup reminders, status flip, post‑return)
+9. **Mapbox**, **Calendar**, **Reports/CSV**, **Coupons UI**
 
-## Roadmap operativa (step principali)
-1. **Migrazioni + Tools + Demo**
-2. **Availability** (garage unico, overlap per giorni)
-3. **Risultati** (solo disponibili + prezzo/gg da stagionalità)
-4. **Calcolo prezzi** completo (servizi, assicurazione, sconti, coupon)
-5. **Checkout wizard** con session/hold 15'
-6. **Stripe** (Payment Intents, deposito %)
-7. **Email + PDF** voucher con QR
-8. **Dashboard cliente** + Cron flip stati e cancellazioni policy
-9. **Mapbox** (sedi e consegna a domicilio), **Calendario**, **Report/CSV**, **Coupon**
-
-## QA checklist (per ogni PR)
-- [ ] PHPCS OK
-- [ ] i18n completo
-- [ ] Sicurezza (nonce/cap/escaping)
-- [ ] Query preparate
-- [ ] Documentazione aggiornata (README/AGENTS)
-- [ ] Test manuale di flusso: ricerca → risultati → checkout UI
-
-## Note
-- Pagine dinamiche (risultati/checkout/dashboard) vanno escluse dal caching
-- Il campo **Paese** del cliente (Step 3) è obbligatorio e guiderà la localizzazione notifiche/dashboard
+## QA checklist per PR
+- [ ] PHPCS passes
+- [ ] i18n complete (English default)
+- [ ] Security (nonce/caps/escape/sanitize); prepared SQL
+- [ ] README/AGENTS updated
+- [ ] Manual flow test: search → results → checkout UI
