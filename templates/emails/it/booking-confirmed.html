@@ -1,0 +1,8 @@
+{% extends "../base.html" %}
+{% block content %}
+  <h1 style="margin:8px 0 12px">Prenotazione Confermata!</h1>
+  <p>Codice Prenotazione: <strong>{{ booking_code }}</strong></p>
+  <p>Veicolo: {{ vehicle_name }}<br>Date: {{ start_date }} – {{ end_date }}</p>
+  <p class="muted">Riceverai un promemoria 24h prima del ritiro.</p>
+  <p><a href="{{ dashboard_url }}" class="btn">Vai alla tua dashboard</a></p>
+{% endblock %}

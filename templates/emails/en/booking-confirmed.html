@@ -1,0 +1,8 @@
+{% extends "../base.html" %}
+{% block content %}
+  <h1 style="margin:8px 0 12px">Booking Confirmed!</h1>
+  <p>Booking Code: <strong>{{ booking_code }}</strong></p>
+  <p>Vehicle: {{ vehicle_name }}<br>Dates: {{ start_date }} – {{ end_date }}</p>
+  <p class="muted">You will receive a reminder 24h before pickup.</p>
+  <p><a href="{{ dashboard_url }}" class="btn">Go to your dashboard</a></p>
+{% endblock %}

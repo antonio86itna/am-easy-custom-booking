@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<wpml-config>
+  <admin-texts>
+    <key name="amcb_options">
+      <key name="privacy_url" />
+      <key name="terms_url" />
+      <key name="rental_terms_url" />
+    </key>
+  </admin-texts>
+</wpml-config>
