@@ -1,101 +1,64 @@
-# AGENTS.md — Brief per agenti/AI (Codex) • AM Easy Custom Booking
+# AGENTS.md — Operational Brief (Codex‑ready)
 
-**Repo:** https://github.com/antonio86itna/am-easy-custom-booking  
-**Stato di partenza:** v0.1.0 (skeleton funzionante con shortcode/widget base)  
-**Stack:** WordPress plugin custom + Elementor Pro, Stripe, Mapbox, WPML
+Repo: https://github.com/antonio86itna/am-easy-custom-booking  
+Baseline: **v0.1.0** (starter UI). Target next release: **v0.2.0**.
 
 ## North Star
-Realizzare un sistema completo di autonoleggio “Costabilerent”:
-- Ricerca → Risultati → Checkout wizard 5 step → Pagamento (full/deposito) → Conferma
-- Garage **unico** (stock centralizzato); disponibilità per intervallo, anti overbooking
-- Dashboard cliente, email template (i18n), PDF voucher + QR, cron/automation, report
-- Backend: tabelle custom + REST API first
+A complete booking system for Costabilerent:
+- Search → Results → 5‑step Checkout → Stripe (full/deposit) → Confirmation
+- **Single garage** (central inventory); no per‑location stock
+- Customer dashboard, i18n emails, PDF voucher with QR
+- REST‑first; Elementor widgets; WPML compatible
 
-## Vincoli e standard
-- PHP ≥ 8.1 (target 8.3), WordPress 6.5+
-- Coding standard: WordPress/WPCS (PHPCS)
-- Sicurezza: escaping/sanitization/nonce/capabilities; SQL sempre preparato
-- i18n: `__()/_e()` e file `.pot`; compatibilità WPML (wpml-config.xml)
-- Niente dipendenze “pesanti”: Stripe SDK via Composer, niente ACF (se non richiesto)
-- Cache safe: le pagine dinamiche (risultati/checkout/dashboard) vanno **escluse** dai cache plugin
+## Language & i18n
+- Default language: **English** (both backend and frontend).
+- All strings must use `__()` / `_e()` with domain `amcb`.
+- Translations: `.po/.mo` or WPML String Translation.
+- Keep `wpml-config.xml` updated to expose plugin options.
 
-## Stato attuale (v0.1.0)
-- Bootstrap plugin + autoloader
-- Shortcode/widget: **Search**, **Results**, **Checkout**, **Dashboard**, **Tariffe** (UI base)
-- Admin Settings di base (Stripe/Mapbox/links) — placeholders
-- Asset CSS/JS e template email base bilingue
-(vedi README della repo per i dettagli e struttura attuale). 
+## Data model (custom tables)
+- `amcb_vehicles`, `amcb_vehicle_prices`, `amcb_vehicle_blocks`
+- `amcb_services`, `amcb_insurances`
+- `amcb_bookings`, `amcb_booking_items`, `amcb_booking_totals`
+- `amcb_coupons`, `amcb_locations`, `amcb_abandoned`, `amcb_logs`
 
-## Dati e tabelle (da implementare nelle prossime versioni)
-- `amcb_vehicles (id, name, type, stock_total, featured, featured_priority, …)`
-- `amcb_vehicle_prices (vehicle_id, date_from, date_to, price_per_day, …)`
-- `amcb_vehicle_blocks (vehicle_id, start_date, end_date, qty, …)`
-- `amcb_services (name, charge_type: flat/per_day, price, vehicle_type, active)`
-- `amcb_insurances (vehicle_id, name, daily_price, franchise, is_default)`
-- `amcb_bookings (booking_code, user_id, email, phone, country, status, payment_mode, totals…)`
-- `amcb_booking_items (booking_id, vehicle_id, start_date, end_date, pickup, dropoff, home_delivery, …)`
-- `amcb_booking_totals (booking_id, base_total, insurance_total, services_total, discount_total, grand_total)`
-- `amcb_coupons (code, type, amount, scope, vehicles_json, date_from/to, min_days, active)`
-- `amcb_locations (slug, name, address, lat, lng)`
-- `amcb_abandoned (email, name, vehicle_name, start_date, end_date, token, emailed_at, converted_booking_id)`
-- `amcb_logs (channel, level, message, context, created_at)`
+## Booking states
+`pending → paid → confirmed → in_progress → completed`  
+Extra: `canceled`, `refunded`, `abandoned`, `expired_hold`.
 
-## Stati prenotazione
-`pending → paid → confirmed → in_progress → completed → (refunded|canceled)`  
-Extra: `abandoned`, `expired_hold`.
+## REST endpoints (v0.2.0)
+- `GET  /amcb/v1/search?start_date&end_date&pickup&dropoff&home_delivery=0|1`
+- `POST /amcb/v1/checkout/price`
+- `POST /amcb/v1/checkout/prepare`
+- `POST /amcb/v1/checkout/intent`
+- `POST /amcb/v1/stripe/webhook`
+- `GET  /amcb/v1/bookings/me` (auth)
+- `GET  /amcb/v1/bookings/{id}/voucher` (auth)
 
-## Piano a step (partire da v0.1.0)
+## Pricing rules (server‑side)
+days = diff(end, start)
+base = days * seasonal daily price
+insurance = days * selected daily insurance
+services = sum(flat + per_day * days)
+long-rent discounts + coupons
+grand_total = base + insurance + services - discounts
 
-**M1 – Migrazioni + Tools + Dati demo**
-- Aggiungi `src/Install/Activator.php` con `dbDelta()` per tutte le tabelle.
-- Admin → AMCB → **Tools**: pulsanti “Migrazioni DB” e “Crea dati demo” (Fiat Panda + sedi Ischia).
-- Ruoli: `amcb_customer`, `amcb_manager`; cron: `amcb_cron_minutely`, `amcb_cron_hourly`.
+## Milestones (create small PRs)
+1. **PR‑1:** Migrations (dbDelta) + Admin Tools + Demo + roles + cron
+2. **PR‑2:** Availability engine (range overlap) + Results shows only available
+3. **PR‑3:** Elementor widgets (Results, Checkout, Dashboard, Rates)
+4. **PR‑4:** REST + pricing breakdown + 15' session hold (transients)
+5. **PR‑5:** Stripe (Payment Intents full/deposit) + webhook (paid→confirmed)
+6. **PR‑6:** PDF voucher + QR (Dompdf + QR lib) + link in dashboard
+7. **PR‑7:** Cron automations + email templates (EN/IT) + status flips
 
-**M2 – Availability engine**
-- `src/Front/Availability.php`: calcolo unità disponibili per ogni giorno nel range:
-  - somma prenotazioni attive (`paid/confirmed/in_progress`) + `vehicle_blocks`
-  - `available = stock_total - max(occupancyPerDay)`; >0 ⇒ disponibile.
+## Definition of Done
+- PHPCS passes; i18n complete; prepared SQL only
+- Security: nonce/capabilities, sanitize input, escape output
+- Tests: manual flow + README/AGENTS updated
+- No cache issues on dynamic pages
 
-**M3 – Risultati dinamici**
-- `[amcb_results]`: mostra solo i veicoli disponibili per `start_date/end_date` con prezzo/gg (selezione da `vehicle_prices`).
-- Ordina: featured desc, featured_priority desc, name asc.
-
-**M4 – Calcolo prezzi e breakdown**
-- Implementa calcolo: base (giorni * price/gg) + assicurazione (+/gg) + servizi (flat o per_day * giorni) − sconti lunghi − coupon.
-- Salva in `amcb_booking_totals`.
-
-**M5 – Wizard checkout + session/hold (15 minuti)**
-- `src/Front/Session.php` via transients + cookie `amcb_sid`.
-- Alla conferma step 4: crea **booking** in `pending` + **booking_items**; hold mentale (non detrae stock, ma evita doppia gara con user stesso).
-- Abandoned: se non paga entro 1h → email ricordino; hold scade a 15’.
-
-**M6 – Stripe Payment Intents**
-- Server: crea Intent (full/deposit), gestisci capture post-webhook.
-- Webhook: `payment_intent.succeeded` ⇒ `paid` + genera `booking_code` unico progressivo (`RC-YYYY-000001`).
-- Auto-registrazione utente (se email nuova), invio credenziali via email.
-
-**M7 – Email e PDF**
-- Template EN/IT; conferma, pre-ritiro, post-riconsegna; invio admin/manager/cliente.
-- PDF voucher con QR (codice prenotazione); link in dashboard.
-
-**M8 – Dashboard cliente**
-- Elenco prenotazioni (future, passate, stato pagamento), dettaglio, richiesta cancellazione (rispettando policy).
-- Flip automatico stato con cron: `confirmed → in_progress` all’avvio, `in_progress → completed` alla riconsegna.
-
-**M9 – Mapbox, Calendario, Report, Coupon**
-- Mapbox: sedi/indirizzi; se home delivery, pin su indirizzo cliente.
-- Calendario timeline/list (uscite/rientri del giorno).
-- Report & CSV, codici sconto.
-
-## Definition of Done per PR
-- PHPCS ok (`WordPress` standard)
-- Tutto tradotto (`__()/_e()`); nessun testo hardcoded non i18n
-- Security review (nonce, caps, esc_*, sanitize_*)
-- Niente query non preparate
-- README aggiornato; CHANGELOG entry
-- Test manuali documentati (vedi README “QA checklist”)
-
-## Convenzioni
-- Branch: `feat/*`, `fix/*`, `chore/*`, `docs/*`
-- Commit: Conventional Commits (`feat:`, `fix:`, …)
-- PHP namespace: `AMCB\\…`
+## Conventions
+- Branches: `feat/*`, `fix/*`, `chore/*`, `docs/*`
+- Conventional commits
+- Namespace: `AMCB\*`
