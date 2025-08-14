@@ -3,6 +3,7 @@
     var cfg = window.amcbResults || {};
     var container = $('#amcb-results');
     var params = Object.fromEntries(new URLSearchParams(window.location.search));
+    params._wpnonce = cfg.nonce;
     $.ajax({
       url: cfg.restUrl,
       method: 'GET',
