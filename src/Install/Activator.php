@@ -22,6 +22,14 @@ class Activator {
     public static function activate() {
         Migrations::migrate();
 
+        if ( ! wp_next_scheduled( 'amcb_cron_minutely' ) ) {
+            wp_schedule_event( time(), 'amcb_minutely', 'amcb_cron_minutely' );
+        }
+
+        if ( ! wp_next_scheduled( 'amcb_cron_hourly' ) ) {
+            wp_schedule_event( time(), 'hourly', 'amcb_cron_hourly' );
+        }
+
         // Basic customer role. Only grants read access.
         add_role(
             'amcb_customer',
@@ -49,6 +57,8 @@ class Activator {
      */
     public static function deactivate() {
         // Cleanup scheduled events if any.
+        wp_clear_scheduled_hook( 'amcb_cron_minutely' );
+        wp_clear_scheduled_hook( 'amcb_cron_hourly' );
 
         remove_role( 'amcb_customer' );
         remove_role( 'amcb_manager' );
