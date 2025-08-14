@@ -16,7 +16,25 @@ class Roles {
      *
      * @var int
      */
-    const VERSION = 1;
+    const VERSION = 2;
+
+    /**
+     * Capabilities handled by the plugin.
+     *
+     * @var string[]
+     */
+    const CAPABILITIES = array(
+        'amcb_manage_bookings',
+        'amcb_manage_vehicles',
+        'amcb_manage_prices',
+        'amcb_manage_blocks',
+        'amcb_manage_services',
+        'amcb_manage_insurances',
+        'amcb_manage_coupons',
+        'amcb_manage_locations',
+        'amcb_manage_tools',
+        'amcb_manage_settings',
+    );
 
     /**
      * Ensure capabilities are set for required roles.
@@ -30,11 +48,21 @@ class Roles {
             return;
         }
 
+        $caps = self::CAPABILITIES;
+
         foreach ( array( 'administrator', 'amcb_manager' ) as $role_name ) {
             $role = get_role( $role_name );
 
             if ( $role ) {
-                $role->add_cap( 'amcb_manage_bookings' );
+                $role->add_cap( 'amcb_manage_dashboard' );
+
+                foreach ( $caps as $cap ) {
+                    if ( 'amcb_manager' === $role_name && 'amcb_manage_settings' === $cap ) {
+                        continue;
+                    }
+
+                    $role->add_cap( $cap );
+                }
             }
         }
 
