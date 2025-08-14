@@ -13,6 +13,7 @@ use AMCB\Admin\Settings;
 use AMCB\Admin\Tools;
 use AMCB\Api\Rest;
 use AMCB\Front\Shortcodes;
+use AMCB\Install\DemoSeeder;
 
 /**
  * Main plugin class.
@@ -45,11 +46,12 @@ class Plugin {
 
 				// Admin.
 		if ( is_admin() ) {
-				Menu::register();
-				Tools::register();
-				add_action( 'admin_init', array( Settings::class, 'settings' ) );
-				add_action( 'admin_init', array( Roles::class, 'ensure_caps' ) );
-				add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_assets' ) );
+						DemoSeeder::init();
+						Menu::register();
+						Tools::register();
+						add_action( 'admin_init', array( Settings::class, 'settings' ) );
+						add_action( 'admin_init', array( Roles::class, 'ensure_caps' ) );
+						add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_assets' ) );
 		}
 	}
 

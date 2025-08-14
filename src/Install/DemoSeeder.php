@@ -28,28 +28,21 @@ class DemoSeeder {
 	/**
 	 * Run the demo seeder.
 	 *
-	 * Inserts demo vehicles, prices, insurances, services and locations.
-	 * Returns early if data already exists.
+         * Inserts demo vehicles, prices, insurances, services and locations.
+         * Safe to run multiple times without creating duplicates.
 	 *
 	 * @return void
 	 */
 	public static function run() {
 		global $wpdb;
 
-               $vehicle_table   = $wpdb->prefix . 'amcb_vehicles';
-               $price_table     = $wpdb->prefix . 'amcb_vehicle_prices';
-               $block_table     = $wpdb->prefix . 'amcb_vehicle_blocks';
-               $insurance_table = $wpdb->prefix . 'amcb_insurances';
-               $service_table   = $wpdb->prefix . 'amcb_services';
-               $coupon_table    = $wpdb->prefix . 'amcb_coupons';
-               $location_table  = $wpdb->prefix . 'amcb_locations';
-
-		$has_data = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$vehicle_table}" );
-
-		if ( $has_data > 0 ) {
-			esc_html_e( 'Demo data already seeded.', 'amcb' );
-			return;
-		}
+                $vehicle_table   = $wpdb->prefix . 'amcb_vehicles';
+                $price_table     = $wpdb->prefix . 'amcb_vehicle_prices';
+                $block_table     = $wpdb->prefix . 'amcb_vehicle_blocks';
+                $insurance_table = $wpdb->prefix . 'amcb_insurances';
+                $service_table   = $wpdb->prefix . 'amcb_services';
+                $coupon_table    = $wpdb->prefix . 'amcb_coupons';
+                $location_table  = $wpdb->prefix . 'amcb_locations';
 
 		// Vehicles.
 		$vehicles = array(
@@ -285,8 +278,6 @@ class DemoSeeder {
                        }
                }
 
-		esc_html_e( 'Demo data seeded.', 'amcb' );
-	}
+                return;
+        }
 }
-
-DemoSeeder::init();
