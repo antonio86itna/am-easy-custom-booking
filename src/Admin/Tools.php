@@ -58,44 +58,48 @@ class Tools {
 		<?php
 	}
 
-	/**
-	 * Run migrations action.
-	 *
-	 * Requires the `amcb_manage_bookings` capability.
-	 */
+		/**
+		 * Run migrations action.
+		 *
+		 * Requires the `amcb_manage_tools` capability.
+		 */
 	public static function run_migrations() {
-		if ( ! current_user_can( 'amcb_manage_bookings' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown
-			wp_die( esc_html__( 'You are not allowed to perform this action.', 'amcb' ) );
+			check_admin_referer( 'amcb_run_migrations' );
+
+		if ( ! current_user_can( 'amcb_manage_tools' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown
+				wp_die( esc_html__( 'You are not allowed to perform this action.', 'amcb' ) );
 		}
-		check_admin_referer( 'amcb_run_migrations' );
-		Migrations::migrate();
-		$redirect = add_query_arg(
-			'amcb_notice',
-			'migrations_run',
-			admin_url( 'admin.php?page=amcb-tools' )
-		);
-		wp_safe_redirect( $redirect );
-		exit;
+
+			Migrations::migrate();
+			$redirect = add_query_arg(
+				'amcb_notice',
+				'migrations_run',
+				admin_url( 'admin.php?page=amcb-tools' )
+			);
+			wp_safe_redirect( $redirect );
+			exit;
 	}
 
-	/**
-	 * Seed demo data action.
-	 *
-	 * Requires the `amcb_manage_bookings` capability.
-	 */
+		/**
+		 * Seed demo data action.
+		 *
+		 * Requires the `amcb_manage_tools` capability.
+		 */
 	public static function create_demo() {
-		if ( ! current_user_can( 'amcb_manage_bookings' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown
-			wp_die( esc_html__( 'You are not allowed to perform this action.', 'amcb' ) );
+			check_admin_referer( 'amcb_create_demo' );
+
+		if ( ! current_user_can( 'amcb_manage_tools' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown
+				wp_die( esc_html__( 'You are not allowed to perform this action.', 'amcb' ) );
 		}
-		check_admin_referer( 'amcb_create_demo' );
-		do_action( 'amcb_seed_demo' );
-		$redirect = add_query_arg(
-			'amcb_notice',
-			'demo_created',
-			admin_url( 'admin.php?page=amcb-tools' )
-		);
-		wp_safe_redirect( $redirect );
-		exit;
+
+			do_action( 'amcb_seed_demo' );
+			$redirect = add_query_arg(
+				'amcb_notice',
+				'demo_created',
+				admin_url( 'admin.php?page=amcb-tools' )
+			);
+			wp_safe_redirect( $redirect );
+			exit;
 	}
 }
 
