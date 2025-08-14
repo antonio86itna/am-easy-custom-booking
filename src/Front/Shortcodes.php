@@ -71,26 +71,31 @@ class Shortcodes {
 		 *
 		 * @return string
 		 */
-	public static function results() {
-			wp_enqueue_style( 'amcb-frontend' );
-			ob_start();
-		?>
-				<section class="amcb-results">
-						<h2><?php esc_html_e( 'Available vehicles', 'amcb' ); ?></h2>
-						<div class="amcb-vehicles">
-						<div class="amcb-vehicle-card">
-								<div class="amcb-vehicle-thumb"></div>
-								<div class="amcb-vehicle-body">
-								<h3>Fiat Panda</h3>
-								<p class="amcb-price">€45 / <?php esc_html_e( 'day', 'amcb' ); ?></p>
-								<a class="amcb-btn amcb-btn-primary" href="<?php echo esc_url( home_url( '/checkout' ) ); ?>"><?php esc_html_e( 'Book now', 'amcb' ); ?></a>
-								</div>
-						</div>
-						</div>
-				</section>
-				<?php
-				return ob_get_clean();
-	}
+       public static function results() {
+                       wp_enqueue_style( 'amcb-frontend' );
+                       wp_enqueue_script(
+                               'amcb-results',
+                               plugins_url( '../../assets/js/results.js', __FILE__ ),
+                               array( 'jquery' ),
+                               '0.1.0',
+                               true
+                       );
+                       wp_localize_script(
+                               'amcb-results',
+                               'amcbResults',
+                               array(
+                                       'restUrl' => esc_url_raw( rest_url( 'amcb/v1/search' ) ),
+                                       'nonce'   => wp_create_nonce( 'wp_rest' ),
+                               )
+                       );
+                       ob_start();
+               ?>
+                               <section class="amcb-results">
+                                               <div class="amcb-vehicles" id="amcb-results"></div>
+                               </section>
+                               <?php
+                               return ob_get_clean();
+       }
 
 		/**
 		 * Render the checkout wizard.
