@@ -10,8 +10,9 @@ class Settings {
     }
 
     public static function menu() {
-        add_menu_page( 'AMCB', 'AMCB', 'manage_options', 'amcb-settings', [ __CLASS__, 'render' ], 'dashicons-car', 56 );
-        add_submenu_page( 'amcb-settings', __( 'Tools', 'amcb' ), __( 'Tools', 'amcb' ), 'manage_options', 'amcb-tools', [ Tools::class, 'render' ] );
+        // Only booking managers can access the settings pages.
+        add_menu_page( 'AMCB', 'AMCB', 'amcb_manage_bookings', 'amcb-settings', [ __CLASS__, 'render' ], 'dashicons-car', 56 );
+        add_submenu_page( 'amcb-settings', __( 'Tools', 'amcb' ), __( 'Tools', 'amcb' ), 'amcb_manage_bookings', 'amcb-tools', [ Tools::class, 'render' ] );
     }
     public static function settings() {
         register_setting('amcb', 'amcb_options');

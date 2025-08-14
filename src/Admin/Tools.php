@@ -28,8 +28,13 @@ class Tools {
         <?php
     }
 
+    /**
+     * Run migrations action.
+     *
+     * Requires the `amcb_manage_bookings` capability.
+     */
     public static function run_migrations() {
-        if ( ! current_user_can( 'manage_options' ) ) {
+        if ( ! current_user_can( 'amcb_manage_bookings' ) ) {
             wp_die( esc_html__( 'You are not allowed to perform this action.', 'amcb' ) );
         }
         check_admin_referer( 'amcb_run_migrations' );
@@ -38,8 +43,13 @@ class Tools {
         exit;
     }
 
+    /**
+     * Seed demo data action.
+     *
+     * Requires the `amcb_manage_bookings` capability.
+     */
     public static function create_demo() {
-        if ( ! current_user_can( 'manage_options' ) ) {
+        if ( ! current_user_can( 'amcb_manage_bookings' ) ) {
             wp_die( esc_html__( 'You are not allowed to perform this action.', 'amcb' ) );
         }
         check_admin_referer( 'amcb_create_demo' );
