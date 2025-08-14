@@ -24,17 +24,17 @@ class Rest {
 		add_action(
 			'rest_api_init',
 			function () {
-				register_rest_route(
-					'amcb/v1',
-					'/ping',
-					array(
-						'methods'             => 'GET',
-						'callback'            => function () {
-							return array( 'ok' => true );
-						},
-						'permission_callback' => '__return_true',
-					)
-				);
+								register_rest_route(
+									'amcb/v1',
+									'/ping',
+									array(
+										'methods'  => 'GET',
+										'callback' => function () {
+												return array( 'ok' => true );
+										},
+										'permission_callback' => array( __CLASS__, 'check_permissions' ),
+									)
+								);
 
 				register_rest_route(
 					'amcb/v1',
@@ -42,7 +42,7 @@ class Rest {
 					array(
 						'methods'             => 'GET',
 						'callback'            => array( __CLASS__, 'search' ),
-						'permission_callback' => '__return_true',
+						'permission_callback' => array( __CLASS__, 'check_permissions' ),
 						'args'                => array(
 							'start_date'    => array(
 								'required'          => true,
@@ -70,6 +70,27 @@ class Rest {
 				);
 			}
 		);
+	}
+
+		/**
+		 * Verify nonce and optional capability.
+		 *
+		 * @param WP_REST_Request $request    Request.
+		 * @param string          $capability Optional capability to check.
+		 * @return true|WP_Error
+		 */
+	public static function check_permissions( WP_REST_Request $request, $capability = '' ) {
+			$nonce = $request->get_param( '_wpnonce' );
+
+		if ( ! $nonce || ! wp_verify_nonce( $nonce, 'wp_rest' ) ) {
+				return new WP_Error( 'amcb_rest_forbidden', __( 'Invalid nonce.', 'amcb' ), array( 'status' => 403 ) );
+		}
+
+		if ( $capability && ! current_user_can( $capability ) ) {
+				return new WP_Error( 'amcb_rest_forbidden', __( 'Sorry, you are not allowed to do that.', 'amcb' ), array( 'status' => 403 ) );
+		}
+
+			return true;
 	}
 
 	/**

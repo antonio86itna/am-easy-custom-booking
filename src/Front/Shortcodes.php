@@ -47,14 +47,14 @@ class Shortcodes {
 								<label><input type="checkbox" name="home_delivery" value="1"> <?php esc_html_e( 'Request home delivery (free)', 'amcb' ); ?></label>
 								<label><?php esc_html_e( 'Pick-up location', 'amcb' ); ?>
 										<select name="pickup">
-										<option value="ischia-porto">Ischia Porto</option>
-										<option value="forio">Forio</option>
+                                                                                <option value="ischia-porto"><?php esc_html_e( 'Ischia Porto', 'amcb' ); ?></option>
+                                                                                <option value="forio"><?php esc_html_e( 'Forio', 'amcb' ); ?></option>
 										</select>
 								</label>
 								<label><?php esc_html_e( 'Drop-off location', 'amcb' ); ?>
 										<select name="dropoff">
-										<option value="ischia-porto">Ischia Porto</option>
-										<option value="forio">Forio</option>
+                                                                                <option value="ischia-porto"><?php esc_html_e( 'Ischia Porto', 'amcb' ); ?></option>
+                                                                                <option value="forio"><?php esc_html_e( 'Forio', 'amcb' ); ?></option>
 										</select>
 								</label>
 								</div>
@@ -181,8 +181,8 @@ class Shortcodes {
 				<h2><?php esc_html_e( 'My Dashboard', 'amcb' ); ?></h2>
 				<div class="amcb-dashboard">
 						<div class="amcb-booking-card">
-						<div class="amcb-booking-title">Fiat Panda – <strong>ISCHIA-971487</strong></div>
-						<div class="amcb-booking-dates">02/08/2025 - 04/08/2025</div>
+                                                <div class="amcb-booking-title"><?php echo esc_html__( 'Fiat Panda', 'amcb' ); ?> – <strong><?php echo esc_html( 'ISCHIA-971487' ); ?></strong></div>
+                                                <div class="amcb-booking-dates"><?php echo esc_html( '02/08/2025 - 04/08/2025' ); ?></div>
 						<span class="amcb-badge success"><?php esc_html_e( 'Confirmed', 'amcb' ); ?></span>
 						</div>
 				</div>
@@ -202,7 +202,7 @@ class Shortcodes {
 				<h2><?php esc_html_e( 'Rates', 'amcb' ); ?></h2>
 				<table class="amcb-table">
 						<thead><tr><th><?php esc_html_e( 'Vehicle', 'amcb' ); ?></th><th><?php esc_html_e( 'Low Season', 'amcb' ); ?></th><th><?php esc_html_e( 'High Season', 'amcb' ); ?></th></tr></thead>
-						<tbody><tr><td>Fiat Panda</td><td>€35</td><td>€60</td></tr></tbody>
+                                                <tbody><tr><td><?php echo esc_html__( 'Fiat Panda', 'amcb' ); ?></td><td><?php echo esc_html( '€35' ); ?></td><td><?php echo esc_html( '€60' ); ?></td></tr></tbody>
 				</table>
 				<?php
 				return ob_get_clean();
