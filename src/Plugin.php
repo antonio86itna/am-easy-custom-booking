@@ -49,6 +49,7 @@ class Plugin {
 				Tools::register();
 				add_action( 'admin_init', array( Settings::class, 'settings' ) );
 				add_action( 'admin_init', array( Roles::class, 'ensure_caps' ) );
+				add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_assets' ) );
 		}
 	}
 
@@ -70,6 +71,26 @@ class Plugin {
 					'nonce'   => wp_create_nonce( 'wp_rest' ),
 				)
 			);
+	}
+
+	/**
+	 * Register admin assets.
+	 *
+	 * @return void
+	 */
+	public static function admin_assets() {
+		$screen = get_current_screen();
+		if ( false === strpos( $screen->id, 'amcb' ) ) {
+			return;
+		}
+
+		$ver = '0.1.0';
+		wp_enqueue_style(
+			'amcb-admin',
+			plugins_url( '../assets/css/admin.css', __FILE__ ),
+			array(),
+			$ver
+		);
 	}
 
 	/**
