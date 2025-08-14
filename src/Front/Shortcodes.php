@@ -149,21 +149,26 @@ class Shortcodes {
 						<button class="amcb-btn amcb-prev"><?php esc_html_e( 'Back', 'amcb' ); ?></button>
 						<button class="amcb-btn amcb-next"><?php esc_html_e( 'Continue', 'amcb' ); ?></button>
 						</div>
-						<div class="amcb-step amcb-step-4" hidden>
-						<h2><?php esc_html_e( 'Step 4: Summary and Payment', 'amcb' ); ?></h2>
-						<label><input type="radio" name="paymode" checked> <?php esc_html_e( 'Pay full amount', 'amcb' ); ?></label>
-						<label><input type="radio" name="paymode"> <?php esc_html_e( 'Pay a deposit (30%)', 'amcb' ); ?></label>
-						<div class="amcb-terms">
-								<label><input type="checkbox" required> <?php esc_html_e( 'I have read and agree to the Privacy Policy and Terms', 'amcb' ); ?></label>
-						</div>
-						<button class="amcb-btn amcb-prev"><?php esc_html_e( 'Back', 'amcb' ); ?></button>
-						<button class="amcb-btn amcb-next"><?php esc_html_e( 'Confirm and Pay', 'amcb' ); ?></button>
-						</div>
-						<div class="amcb-step amcb-step-5" hidden>
-						<h2><?php esc_html_e( 'Step 5: Secure Payment', 'amcb' ); ?></h2>
-						<div id="amcb-stripe-element"></div>
-						<button class="amcb-btn amcb-btn-success"><?php esc_html_e( 'Pay now', 'amcb' ); ?></button>
-						</div>
+                                               <div class="amcb-step amcb-step-4" hidden>
+                                               <h2><?php esc_html_e( 'Step 4: Summary and Payment', 'amcb' ); ?></h2>
+                                               <label><input type="radio" name="paymode" value="full" checked> <?php esc_html_e( 'Pay full amount', 'amcb' ); ?></label>
+                                               <label><input type="radio" name="paymode" value="deposit"> <?php esc_html_e( 'Pay a deposit (30%)', 'amcb' ); ?></label>
+                                               <div id="amcb-summary">
+                                                               <p><?php esc_html_e( 'Full', 'amcb' ); ?>: <span class="amcb-full"></span></p>
+                                                               <p class="amcb-deposit-line" hidden><?php esc_html_e( 'Deposit', 'amcb' ); ?>: <span class="amcb-deposit"></span></p>
+                                                               <p class="amcb-to-collect-line" hidden><?php esc_html_e( 'To collect', 'amcb' ); ?>: <span class="amcb-to-collect"></span></p>
+                                               </div>
+                                               <div class="amcb-terms">
+                                                               <label><input type="checkbox" required> <?php esc_html_e( 'I have read and agree to the Privacy Policy and Terms', 'amcb' ); ?></label>
+                                               </div>
+                                               <button class="amcb-btn amcb-prev"><?php esc_html_e( 'Back', 'amcb' ); ?></button>
+                                               <button class="amcb-btn amcb-next"><?php esc_html_e( 'Confirm and Pay', 'amcb' ); ?></button>
+                                               </div>
+                                               <div class="amcb-step amcb-step-5" hidden>
+                                               <h2><?php esc_html_e( 'Step 5: Secure Payment', 'amcb' ); ?></h2>
+                                               <div id="amcb-stripe-element"></div>
+                                               <button class="amcb-btn amcb-btn-success"><?php esc_html_e( 'Pay now', 'amcb' ); ?></button>
+                                               </div>
 				</div>
 				<?php
 				return ob_get_clean();
