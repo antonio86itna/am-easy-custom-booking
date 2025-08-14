@@ -36,11 +36,13 @@ class DemoSeeder {
 	public static function run() {
 		global $wpdb;
 
-		$vehicle_table   = $wpdb->prefix . 'amcb_vehicles';
-		$price_table     = $wpdb->prefix . 'amcb_vehicle_prices';
-		$insurance_table = $wpdb->prefix . 'amcb_insurances';
-		$service_table   = $wpdb->prefix . 'amcb_services';
-		$location_table  = $wpdb->prefix . 'amcb_locations';
+               $vehicle_table   = $wpdb->prefix . 'amcb_vehicles';
+               $price_table     = $wpdb->prefix . 'amcb_vehicle_prices';
+               $block_table     = $wpdb->prefix . 'amcb_vehicle_blocks';
+               $insurance_table = $wpdb->prefix . 'amcb_insurances';
+               $service_table   = $wpdb->prefix . 'amcb_services';
+               $coupon_table    = $wpdb->prefix . 'amcb_coupons';
+               $location_table  = $wpdb->prefix . 'amcb_locations';
 
 		$has_data = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$vehicle_table}" );
 
@@ -61,24 +63,24 @@ class DemoSeeder {
 			),
 		);
 
-		foreach ( $vehicles as $vehicle ) {
-			$exists = $wpdb->get_var(
-				$wpdb->prepare(
-					"SELECT id FROM {$vehicle_table} WHERE name = %s",
-					$vehicle['name']
-				)
-			);
+               foreach ( $vehicles as $vehicle ) {
+                       $exists = (int) $wpdb->get_var(
+                               $wpdb->prepare(
+                                       "SELECT COUNT(*) FROM {$vehicle_table} WHERE name = %s",
+                                       $vehicle['name']
+                               )
+                       );
 
-			if ( ! $exists ) {
-				$wpdb->query(
-					$wpdb->prepare(
-						"INSERT INTO {$vehicle_table} (name, type, status) VALUES (%s, %s, 'active')",
-						$vehicle['name'],
-						$vehicle['type']
-					)
-				);
-			}
-		}
+                       if ( 0 === $exists ) {
+                               $wpdb->query(
+                                       $wpdb->prepare(
+                                               "INSERT INTO {$vehicle_table} (name, type, status) VALUES (%s, %s, 'active')",
+                                               $vehicle['name'],
+                                               $vehicle['type']
+                                       )
+                               );
+                       }
+               }
 
 		// Vehicle prices.
 		foreach ( $vehicles as $index => $vehicle ) {
@@ -89,27 +91,27 @@ class DemoSeeder {
 				)
 			);
 
-			if ( $vehicle_id ) {
-				$exists = $wpdb->get_var(
-					$wpdb->prepare(
-						"SELECT id FROM {$price_table} WHERE vehicle_id = %d",
-						$vehicle_id
-					)
-				);
+                       if ( $vehicle_id ) {
+                               $exists = (int) $wpdb->get_var(
+                                       $wpdb->prepare(
+                                               "SELECT COUNT(*) FROM {$price_table} WHERE vehicle_id = %d",
+                                               $vehicle_id
+                                       )
+                               );
 
-				if ( ! $exists ) {
-					$wpdb->query(
-						$wpdb->prepare(
-							"INSERT INTO {$price_table} (vehicle_id, date_from, date_to, price) VALUES (%d, %s, %s, %f)",
-							$vehicle_id,
-							gmdate( 'Y-m-d' ),
-							gmdate( 'Y-m-d', strtotime( '+1 year' ) ),
-							$index ? 30.00 : 40.00
-						)
-					);
-				}
-			}
-		}
+                               if ( 0 === $exists ) {
+                                       $wpdb->query(
+                                               $wpdb->prepare(
+                                                       "INSERT INTO {$price_table} (vehicle_id, date_from, date_to, price) VALUES (%d, %s, %s, %f)",
+                                                       $vehicle_id,
+                                                       gmdate( 'Y-m-d' ),
+                                                       gmdate( 'Y-m-d', strtotime( '+1 year' ) ),
+                                                       $index ? 30.00 : 40.00
+                                               )
+                                       );
+                               }
+                       }
+               }
 
 		// Insurances.
 		$insurances = array(
@@ -125,25 +127,25 @@ class DemoSeeder {
 			),
 		);
 
-		foreach ( $insurances as $insurance ) {
-			$exists = $wpdb->get_var(
-				$wpdb->prepare(
-					"SELECT id FROM {$insurance_table} WHERE name = %s",
-					$insurance['name']
-				)
-			);
+               foreach ( $insurances as $insurance ) {
+                       $exists = (int) $wpdb->get_var(
+                               $wpdb->prepare(
+                                       "SELECT COUNT(*) FROM {$insurance_table} WHERE name = %s",
+                                       $insurance['name']
+                               )
+                       );
 
-			if ( ! $exists ) {
-				$wpdb->query(
-					$wpdb->prepare(
-						"INSERT INTO {$insurance_table} (name, price, description) VALUES (%s, %f, %s)",
-						$insurance['name'],
-						$insurance['price'],
-						$insurance['description']
-					)
-				);
-			}
-		}
+                       if ( 0 === $exists ) {
+                               $wpdb->query(
+                                       $wpdb->prepare(
+                                               "INSERT INTO {$insurance_table} (name, price, description) VALUES (%s, %f, %s)",
+                                               $insurance['name'],
+                                               $insurance['price'],
+                                               $insurance['description']
+                                       )
+                               );
+                       }
+               }
 
 		// Services.
 		$services = array(
@@ -159,25 +161,98 @@ class DemoSeeder {
 			),
 		);
 
-		foreach ( $services as $service ) {
-			$exists = $wpdb->get_var(
-				$wpdb->prepare(
-					"SELECT id FROM {$service_table} WHERE name = %s",
-					$service['name']
-				)
-			);
+               foreach ( $services as $service ) {
+                       $exists = (int) $wpdb->get_var(
+                               $wpdb->prepare(
+                                       "SELECT COUNT(*) FROM {$service_table} WHERE name = %s",
+                                       $service['name']
+                               )
+                       );
 
-			if ( ! $exists ) {
-				$wpdb->query(
-					$wpdb->prepare(
-						"INSERT INTO {$service_table} (name, price, per_day) VALUES (%s, %f, %d)",
-						$service['name'],
-						$service['price'],
-						$service['per_day']
-					)
-				);
-			}
-		}
+                       if ( 0 === $exists ) {
+                               $wpdb->query(
+                                       $wpdb->prepare(
+                                               "INSERT INTO {$service_table} (name, price, per_day) VALUES (%s, %f, %d)",
+                                               $service['name'],
+                                               $service['price'],
+                                               $service['per_day']
+                                       )
+                               );
+                       }
+               }
+
+               // Vehicle blocks.
+               $blocks = array(
+                       array(
+                               'vehicle_name' => 'Fiat 500',
+                               'date_from'    => gmdate( 'Y-m-d', strtotime( '+2 days' ) ),
+                               'date_to'      => gmdate( 'Y-m-d', strtotime( '+5 days' ) ),
+                               'reason'       => 'Maintenance',
+                       ),
+               );
+
+               foreach ( $blocks as $block ) {
+                       $vehicle_id = $wpdb->get_var(
+                               $wpdb->prepare(
+                                       "SELECT id FROM {$vehicle_table} WHERE name = %s",
+                                       $block['vehicle_name']
+                               )
+                       );
+
+                       if ( $vehicle_id ) {
+                               $exists = (int) $wpdb->get_var(
+                                       $wpdb->prepare(
+                                               "SELECT COUNT(*) FROM {$block_table} WHERE vehicle_id = %d AND date_from = %s AND date_to = %s",
+                                               $vehicle_id,
+                                               $block['date_from'],
+                                               $block['date_to']
+                                       )
+                               );
+
+                               if ( 0 === $exists ) {
+                                       $wpdb->query(
+                                               $wpdb->prepare(
+                                                       "INSERT INTO {$block_table} (vehicle_id, date_from, date_to, reason) VALUES (%d, %s, %s, %s)",
+                                                       $vehicle_id,
+                                                       $block['date_from'],
+                                                       $block['date_to'],
+                                                       $block['reason']
+                                               )
+                                       );
+                               }
+                       }
+               }
+
+               // Coupons.
+               $coupons = array(
+                       array(
+                               'code'        => 'WELCOME10',
+                               'amount'      => 10.0,
+                               'type'        => 'flat',
+                               'usage_limit' => 100,
+                       ),
+               );
+
+               foreach ( $coupons as $coupon ) {
+                       $exists = (int) $wpdb->get_var(
+                               $wpdb->prepare(
+                                       "SELECT COUNT(*) FROM {$coupon_table} WHERE code = %s",
+                                       $coupon['code']
+                               )
+                       );
+
+                       if ( 0 === $exists ) {
+                               $wpdb->query(
+                                       $wpdb->prepare(
+                                               "INSERT INTO {$coupon_table} (code, amount, type, usage_limit, expires_at) VALUES (%s, %f, %s, %d, NULL)",
+                                               $coupon['code'],
+                                               $coupon['amount'],
+                                               $coupon['type'],
+                                               $coupon['usage_limit']
+                                       )
+                               );
+                       }
+               }
 
 		// Locations.
 		$locations = array(
@@ -191,24 +266,24 @@ class DemoSeeder {
 			),
 		);
 
-		foreach ( $locations as $location ) {
-			$exists = $wpdb->get_var(
-				$wpdb->prepare(
-					"SELECT id FROM {$location_table} WHERE name = %s",
-					$location['name']
-				)
-			);
+               foreach ( $locations as $location ) {
+                       $exists = (int) $wpdb->get_var(
+                               $wpdb->prepare(
+                                       "SELECT COUNT(*) FROM {$location_table} WHERE name = %s",
+                                       $location['name']
+                               )
+                       );
 
-			if ( ! $exists ) {
-				$wpdb->query(
-					$wpdb->prepare(
-						"INSERT INTO {$location_table} (name, address) VALUES (%s, %s)",
-						$location['name'],
-						$location['address']
-					)
-				);
-			}
-		}
+                       if ( 0 === $exists ) {
+                               $wpdb->query(
+                                       $wpdb->prepare(
+                                               "INSERT INTO {$location_table} (name, address) VALUES (%s, %s)",
+                                               $location['name'],
+                                               $location['address']
+                                       )
+                               );
+                       }
+               }
 
 		esc_html_e( 'Demo data seeded.', 'amcb' );
 	}
