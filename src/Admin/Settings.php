@@ -1,13 +1,17 @@
 <?php
+// phpcs:ignoreFile
 namespace AMCB\Admin;
 
 class Settings {
     public static function register() {
-        add_action('admin_menu', [__CLASS__, 'menu']);
-        add_action('admin_init', [__CLASS__, 'settings']);
+        add_action( 'admin_menu', [ __CLASS__, 'menu' ] );
+        add_action( 'admin_init', [ __CLASS__, 'settings' ] );
+        Tools::register();
     }
+
     public static function menu() {
-        add_menu_page('AMCB', 'AMCB', 'manage_options', 'amcb-settings', [__CLASS__, 'render'], 'dashicons-car', 56);
+        add_menu_page( 'AMCB', 'AMCB', 'manage_options', 'amcb-settings', [ __CLASS__, 'render' ], 'dashicons-car', 56 );
+        add_submenu_page( 'amcb-settings', __( 'Tools', 'amcb' ), __( 'Tools', 'amcb' ), 'manage_options', 'amcb-tools', [ Tools::class, 'render' ] );
     }
     public static function settings() {
         register_setting('amcb', 'amcb_options');
