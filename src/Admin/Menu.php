@@ -7,6 +7,7 @@
 
 namespace AMCB\Admin;
 
+use AMCB\Admin\Diagnostics;
 use AMCB\Admin\Settings;
 use AMCB\Admin\Tools;
 
@@ -60,24 +61,33 @@ class Menu {
 		);
 
 		foreach ( $sections as $slug => $label ) {
-			add_submenu_page(
-				'amcb-dashboard',
-				$label,
-				$label,
-				"amcb_manage_{$slug}",
-				"amcb-{$slug}",
-				array( __CLASS__, 'render_page' )
-			);
+				add_submenu_page(
+					'amcb-dashboard',
+					$label,
+					$label,
+					"amcb_manage_{$slug}",
+					"amcb-{$slug}",
+					array( __CLASS__, 'render_page' )
+				);
 		}
 
-		add_submenu_page(
-			'amcb-dashboard',
-			__( 'Tools', 'amcb' ),
-			__( 'Tools', 'amcb' ),
-			'amcb_manage_tools',
-			'amcb-tools',
-			array( Tools::class, 'render' )
-		);
+				add_submenu_page(
+					'amcb-dashboard',
+					__( 'Diagnostics', 'amcb' ),
+					__( 'Diagnostics', 'amcb' ),
+					'amcb_manage_tools',
+					'amcb-diagnostics',
+					array( Diagnostics::class, 'render' )
+				);
+
+				add_submenu_page(
+					'amcb-dashboard',
+					__( 'Tools', 'amcb' ),
+					__( 'Tools', 'amcb' ),
+					'amcb_manage_tools',
+					'amcb-tools',
+					array( Tools::class, 'render' )
+				);
 
 		add_submenu_page(
 			'amcb-dashboard',
