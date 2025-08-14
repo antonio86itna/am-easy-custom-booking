@@ -1,10 +1,230 @@
+# Copyright (C) 2025 Totaliweb
+# This file is distributed under the same license as the AM Easy Custom Booking plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: AMCB 0.1.0\n"
-"Language: \n"
+"Project-Id-Version: AM Easy Custom Booking 0.1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/amcb\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-08-14T00:19:46+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: amcb\n"
 
-#: src/Front/Shortcodes.php:15
-msgid "Noleggia un'auto o scooter a Ischia"
+#. Plugin Name of the plugin
+#: am-easy-custom-booking.php
+msgid "AM Easy Custom Booking"
+msgstr ""
+
+#. Description of the plugin
+#: am-easy-custom-booking.php
+msgid "Booking custom per Costabilerent — Totaliweb. Wizard Elementor + Stripe + Mapbox. (Starter skeleton)"
+msgstr ""
+
+#. Author of the plugin
+#: am-easy-custom-booking.php
+msgid "Totaliweb"
+msgstr ""
+
+#: src/Admin/Settings.php:14
+msgid "Main Settings"
+msgstr ""
+
+#: src/Admin/Settings.php:17
+msgid "Deposit %"
+msgstr ""
+
+#: src/Admin/Settings.php:19
+msgid "Policy Links"
+msgstr ""
+
+#: src/Front/Shortcodes.php:42
+msgid "Rent a car or scooter in Ischia"
+msgstr ""
+
+#: src/Front/Shortcodes.php:45
+msgid "Pick-up date"
+msgstr ""
+
+#: src/Front/Shortcodes.php:46
+msgid "Return date"
+msgstr ""
+
+#: src/Front/Shortcodes.php:47
+msgid "Request home delivery (free)"
+msgstr ""
+
+#: src/Front/Shortcodes.php:48
+msgid "Pick-up location"
+msgstr ""
+
+#: src/Front/Shortcodes.php:54
+msgid "Drop-off location"
+msgstr ""
+
+#: src/Front/Shortcodes.php:61
+msgid "Search Availability"
+msgstr ""
+
+#: src/Front/Shortcodes.php:79
+msgid "Available vehicles"
+msgstr ""
+
+#: src/Front/Shortcodes.php:85
+msgid "day"
+msgstr ""
+
+#: src/Front/Shortcodes.php:86
+msgid "Book now"
+msgstr ""
+
+#: src/Front/Shortcodes.php:110
+msgid "Step 1: Additional Services"
+msgstr ""
+
+#: src/Front/Shortcodes.php:111
+msgid "Child seat (€5/day)"
+msgstr ""
+
+#: src/Front/Shortcodes.php:112
+msgid "GPS Navigator (€7/day)"
+msgstr ""
+
+#: src/Front/Shortcodes.php:113
+#: src/Front/Shortcodes.php:120
+#: src/Front/Shortcodes.php:145
+msgid "Continue"
+msgstr ""
+
+#: src/Front/Shortcodes.php:116
+msgid "Step 2: Insurance"
+msgstr ""
+
+#: src/Front/Shortcodes.php:117
+msgid "Basic (included)"
+msgstr ""
+
+#: src/Front/Shortcodes.php:118
+msgid "Premium (variable price/day)"
+msgstr ""
+
+#: src/Front/Shortcodes.php:119
+#: src/Front/Shortcodes.php:144
+#: src/Front/Shortcodes.php:154
+msgid "Back"
+msgstr ""
+
+#: src/Front/Shortcodes.php:123
+msgid "Step 3: Customer Details"
+msgstr ""
+
+#: src/Front/Shortcodes.php:125
+msgid "First name"
+msgstr ""
+
+#: src/Front/Shortcodes.php:126
+msgid "Last name"
+msgstr ""
+
+#: src/Front/Shortcodes.php:127
+msgid "Email"
+msgstr ""
+
+#: src/Front/Shortcodes.php:128
+msgid "Phone"
+msgstr ""
+
+#: src/Front/Shortcodes.php:130
+msgid "Select Country"
+msgstr ""
+
+#: src/Front/Shortcodes.php:131
+msgid "Italy"
+msgstr ""
+
+#: src/Front/Shortcodes.php:132
+msgid "United Kingdom"
+msgstr ""
+
+#: src/Front/Shortcodes.php:133
+msgid "France"
+msgstr ""
+
+#: src/Front/Shortcodes.php:134
+msgid "Germany"
+msgstr ""
+
+#: src/Front/Shortcodes.php:135
+msgid "United States"
+msgstr ""
+
+#: src/Front/Shortcodes.php:138
+msgid "I request an invoice"
+msgstr ""
+
+#: src/Front/Shortcodes.php:140
+msgid "Company name"
+msgstr ""
+
+#: src/Front/Shortcodes.php:141
+msgid "Billing address"
+msgstr ""
+
+#: src/Front/Shortcodes.php:142
+msgid "VAT/Tax ID"
+msgstr ""
+
+#: src/Front/Shortcodes.php:148
+msgid "Step 4: Summary and Payment"
+msgstr ""
+
+#: src/Front/Shortcodes.php:149
+msgid "Pay full amount"
+msgstr ""
+
+#: src/Front/Shortcodes.php:150
+msgid "Pay a deposit (30%)"
+msgstr ""
+
+#: src/Front/Shortcodes.php:152
+msgid "I have read and agree to the Privacy Policy and Terms"
+msgstr ""
+
+#: src/Front/Shortcodes.php:155
+msgid "Confirm and Pay"
+msgstr ""
+
+#: src/Front/Shortcodes.php:158
+msgid "Step 5: Secure Payment"
+msgstr ""
+
+#: src/Front/Shortcodes.php:160
+msgid "Pay now"
+msgstr ""
+
+#: src/Front/Shortcodes.php:176
+msgid "My Dashboard"
+msgstr ""
+
+#: src/Front/Shortcodes.php:181
+msgid "Confirmed"
+msgstr ""
+
+#: src/Front/Shortcodes.php:197
+msgid "Rates"
+msgstr ""
+
+#: src/Front/Shortcodes.php:199
+msgid "Vehicle"
+msgstr ""
+
+#: src/Front/Shortcodes.php:199
+msgid "Low Season"
+msgstr ""
+
+#: src/Front/Shortcodes.php:199
+msgid "High Season"
 msgstr ""
