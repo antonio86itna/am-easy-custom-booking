@@ -56,9 +56,17 @@ class Plugin {
 	public static function assets() {
 		$ver = '0.1.0';
 		wp_register_style( 'amcb-frontend', plugins_url( '../assets/css/frontend.css', __FILE__ ), array(), $ver );
-		wp_register_script( 'amcb-frontend', plugins_url( '../assets/js/frontend.js', __FILE__ ), array( 'jquery' ), $ver, true );
-		wp_register_script( 'amcb-checkout', plugins_url( '../assets/js/checkout.js', __FILE__ ), array( 'jquery' ), $ver, true );
-	}
+               wp_register_script( 'amcb-frontend', plugins_url( '../assets/js/frontend.js', __FILE__ ), array( 'jquery' ), $ver, true );
+               wp_register_script( 'amcb-checkout', plugins_url( '../assets/js/checkout.js', __FILE__ ), array( 'jquery' ), $ver, true );
+               wp_localize_script(
+                       'amcb-checkout',
+                       'amcbCheckout',
+                       array(
+                               'restUrl' => esc_url_raw( rest_url( 'amcb/v1/checkout/price' ) ),
+                               'nonce'   => wp_create_nonce( 'wp_rest' ),
+                       )
+               );
+       }
 
 	/**
 	 * Register cron schedules.
