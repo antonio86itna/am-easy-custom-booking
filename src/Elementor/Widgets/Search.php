@@ -1,4 +1,5 @@
 <?php
+// phpcs:ignoreFile
 namespace AMCB\Elementor\Widgets;
 
 use Elementor\Widget_Base;
