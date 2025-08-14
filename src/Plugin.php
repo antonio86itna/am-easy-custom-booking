@@ -7,6 +7,7 @@
 
 namespace AMCB;
 
+use AMCB\Admin\Roles;
 use AMCB\Admin\Settings;
 use AMCB\Api\Rest;
 use AMCB\Front\Shortcodes;
@@ -43,6 +44,7 @@ class Plugin {
 		// Admin.
 		if ( is_admin() ) {
 			Settings::register();
+			add_action( 'admin_init', array( Roles::class, 'ensure_caps' ) );
 		}
 	}
 
