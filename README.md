@@ -27,6 +27,10 @@ Custom WordPress booking plugin for **Costabilerent** (car & scooter).
    - Dashboard: `[amcb_dashboard]`
    - Rates: `[amcb_tariffe]`
 
+## Upgrade
+
+Deactivate and reactivate the plugin after updating to rerun database migrations. This refreshes the `amcb_db_version` option and applies schema changes (e.g. DB **1.2.0** adds a `hold_until` column to `amcb_bookings` for session holds).
+
 ## Coding standards & i18n
 - WPCS/PHPCS:  
   `phpcs -p --standard=WordPress --extensions=php am-easy-custom-booking.php src`

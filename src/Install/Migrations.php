@@ -11,12 +11,16 @@ namespace AMCB\Install;
  * Handle database schema migrations for AMCB tables.
  */
 class Migrations {
-	/**
-	 * Current database schema version.
-	 *
-	 * @var string
-	 */
-        const DB_VERSION = '1.1.0';
+        /**
+         * Current database schema version.
+         *
+         * Versions:
+         * - 1.1.0 Initial schema.
+         * - 1.2.0 Added hold_until column to bookings table.
+         *
+         * @var string
+         */
+        const DB_VERSION = '1.2.0';
 
 	/**
 	 * Retrieve SQL table schemas.
@@ -91,7 +95,7 @@ class Migrations {
             KEY vehicle_id (vehicle_id)
         ) {$charset_collate};";
 
-		$tables['bookings'] = "CREATE TABLE {$prefix}bookings (
+                $tables['bookings'] = "CREATE TABLE {$prefix}bookings (
             id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
             customer_id bigint(20) unsigned NOT NULL DEFAULT 0,
             status varchar(20) NOT NULL DEFAULT 'pending',
@@ -100,6 +104,7 @@ class Migrations {
             end_date date NOT NULL,
             pickup_id bigint(20) unsigned NOT NULL DEFAULT 0,
             dropoff_id bigint(20) unsigned NOT NULL DEFAULT 0,
+            hold_until datetime DEFAULT NULL,
             created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
             updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY  (id),
@@ -177,18 +182,16 @@ class Migrations {
 	/**
 	 * Run database migrations if needed.
 	 */
-	public static function migrate() {
-                $installed = get_option( 'amcb_db_version' );
-                if ( $installed && version_compare( $installed, self::DB_VERSION, '>=' ) ) {
-                        return;
-                }
-
+        public static function migrate() {
                 require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
                 foreach ( self::get_table_schemas() as $sql ) {
                         dbDelta( $sql );
                 }
 
-                update_option( 'amcb_db_version', self::DB_VERSION );
+                $installed = get_option( 'amcb_db_version' );
+                if ( ! $installed || version_compare( $installed, self::DB_VERSION, '<' ) ) {
+                        update_option( 'amcb_db_version', self::DB_VERSION );
+                }
         }
 }
