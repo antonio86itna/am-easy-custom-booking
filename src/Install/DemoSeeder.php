@@ -247,17 +247,17 @@ class DemoSeeder {
                        }
                }
 
-		// Locations.
-		$locations = array(
-			array(
-				'name'    => 'Ischia Port',
-				'address' => 'Ischia, Italy',
-			),
-			array(
-				'name'    => 'Forio Port',
-				'address' => 'Forio, Italy',
-			),
-		);
+                // Locations.
+                $locations = array(
+                        array(
+                                'name'    => 'Ischia Porto',
+                                'address' => 'Ischia, Italy',
+                        ),
+                        array(
+                                'name'    => 'Forio',
+                                'address' => 'Forio, Italy',
+                        ),
+                );
 
                foreach ( $locations as $location ) {
                        $exists = (int) $wpdb->get_var(
