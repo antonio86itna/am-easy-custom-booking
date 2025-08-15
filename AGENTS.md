@@ -77,7 +77,12 @@ If `payment_mode=deposit`, compute `deposit_amount` from plugin setting; `to_col
 4. **PR‑4:** REST + pricing breakdown + 15' session hold
 5. **PR‑5:** Stripe Payment Intents (full/deposit) + webhook (paid→confirmed + booking_code)
 6. **PR‑6:** PDF voucher + QR (Dompdf + QR lib) + dashboard link
-7. **PR‑7:** Cron automations + email templates (EN/IT) + status flips
+7. **PR‑7:** Checkout session hold + /prepare — ⏳ next
+8. **PR‑8:** Cron automations + email templates + status flips
+
+## Operational notes
+- Concurrency: do a final availability check on /checkout/prepare and recheck before confirming after webhook if hold expired.
+- Stripe idempotency: use a deterministic key per booking and amount ("amcb:pi:booking:{id}:{amount}").
 
 ## Definition of Done
 - PHPCS passes (WordPress standard), prepared SQL only
