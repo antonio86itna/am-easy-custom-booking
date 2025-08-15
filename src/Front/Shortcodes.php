@@ -84,8 +84,9 @@ class Shortcodes {
                                'amcb-results',
                                'amcbResults',
                                array(
-                                       'restUrl' => esc_url_raw( rest_url( 'amcb/v1/search' ) ),
-                                       'nonce'   => wp_create_nonce( 'wp_rest' ),
+                                       'restUrl'     => esc_url_raw( rest_url( 'amcb/v1/search' ) ),
+                                       'nonce'       => wp_create_nonce( 'wp_rest' ),
+                                       'checkoutUrl' => esc_url_raw( home_url( '/checkout' ) ),
                                )
                        );
                        ob_start();
