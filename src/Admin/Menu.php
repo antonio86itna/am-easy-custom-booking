@@ -10,6 +10,7 @@ namespace AMCB\Admin;
 use AMCB\Admin\Diagnostics;
 use AMCB\Admin\Settings;
 use AMCB\Admin\Tools;
+use AMCB\Admin\Vehicles;
 
 /**
  * Admin menu handler.
@@ -61,14 +62,18 @@ class Menu {
 		);
 
 		foreach ( $sections as $slug => $label ) {
-				add_submenu_page(
-					'amcb-dashboard',
-					$label,
-					$label,
-					"amcb_manage_{$slug}",
-					"amcb-{$slug}",
-					array( __CLASS__, 'render_page' )
-				);
+						$callback = array( __CLASS__, 'render_page' );
+			if ( 'vehicles' === $slug ) {
+				$callback = array( Vehicles::class, 'render' );
+			}
+						add_submenu_page(
+							'amcb-dashboard',
+							$label,
+							$label,
+							"amcb_manage_{$slug}",
+							"amcb-{$slug}",
+							$callback
+						);
 		}
 
 				add_submenu_page(

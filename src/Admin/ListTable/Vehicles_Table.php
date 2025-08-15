@@ -49,7 +49,7 @@ class Vehicles_Table extends WP_List_Table {
 		?>
 				<div class="wrap">
 						<h1 class="wp-heading-inline"><?php echo esc_html__( 'Vehicles', 'amcb' ); ?></h1>
-						<a href="#" class="page-title-action"><?php echo esc_html__( 'Add New', 'amcb' ); ?></a>
+												<a href="<?php echo esc_url( admin_url( 'admin.php?page=amcb-vehicles&action=add' ) ); ?>" class="page-title-action"><?php echo esc_html__( 'Add New', 'amcb' ); ?></a>
 						<hr class="wp-header-end">
 						<form method="post">
 							<?php $table->display(); ?>
