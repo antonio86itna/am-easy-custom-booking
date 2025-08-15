@@ -28,14 +28,21 @@
 					if ( ! Array.isArray( res )) {
 						return;
 					}
-					res.sort(
-						function (a,b) {
-							return a.name.localeCompare( b.name ); }
-					);
                                         var html = res.map(
                                                 function (v) {
                                                         var price = fmt.format( v.price_per_day );
-                                                        return '<div class="amcb-vehicle-card"><div class="amcb-vehicle-body"><h3>' + v.name + ' <span class="amcb-price">' + price + '/day</span></h3></div></div>';
+                                                        var query = {
+                                                                vehicle_id: v.id,
+                                                                start_date: params.start_date,
+                                                                end_date: params.end_date,
+                                                                pickup: params.pickup,
+                                                                dropoff: params.dropoff,
+                                                        };
+                                                        if ( params.home_delivery ) {
+                                                                query.home_delivery = params.home_delivery;
+                                                        }
+                                                        var url = cfg.checkoutUrl + '?' + $.param( query );
+                                                        return '<a class="amcb-vehicle-card" href="' + url + '"><div class="amcb-vehicle-body"><h3>' + v.name + ' <span class="amcb-price">' + price + '/day</span></h3></div></a>';
                                                 }
                                         ).join( '' );
 					container.html( html );

@@ -7,7 +7,8 @@
 .amcb-btn-primary{background:var(--amcb-blue);color:#fff}
 .amcb-btn-success{background:var(--amcb-green);color:#fff}
 .amcb-results .amcb-vehicles{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
-.amcb-vehicle-card{background:#fff;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.06);overflow:hidden}
+.amcb-vehicle-card{display:block;background:#fff;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.06);overflow:hidden;color:inherit;text-decoration:none;transition:box-shadow .2s}
+.amcb-vehicle-card:hover{box-shadow:0 8px 30px rgba(0,0,0,.1)}
 .amcb-vehicle-thumb{background:#f3f4f6;height:140px}
 .amcb-vehicle-body{padding:16px}
 .amcb-price{font-weight:700;margin:6px 0 12px}
