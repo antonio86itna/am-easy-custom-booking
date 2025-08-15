@@ -43,6 +43,7 @@ class DemoSeeder {
                 $service_table   = $wpdb->prefix . 'amcb_services';
                 $coupon_table    = $wpdb->prefix . 'amcb_coupons';
                 $location_table  = $wpdb->prefix . 'amcb_locations';
+                $booking_table   = $wpdb->prefix . 'amcb_bookings';
 
 		// Vehicles.
                 $vehicles = array(
@@ -319,6 +320,11 @@ class DemoSeeder {
                        }
                }
 
-                return;
-        }
+               // Ensure new booking payment columns have NULL defaults.
+               $wpdb->query(
+                       "UPDATE {$booking_table} SET payment_intent_id = NULL, paid_amount = NULL, payment_method = NULL, receipt_url = NULL WHERE 1=1"
+               );
+
+               return;
+       }
 }
