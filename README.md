@@ -119,3 +119,15 @@ QA checklist per PR
  README/AGENTS updated
 
  Manual flow test: search → results → checkout UI
+
+## Progress (towards v0.2.0)
+- [x] PR‑1: Migrations + Tools + Demo + Roles + Cron
+- [x] PR‑2: Availability engine + Results
+- [x] PR‑3: REST pricing breakdown + Checkout summary
+- [x] PR‑4: Admin UI shell (menu, settings, stubs)
+- [x] HF: Demo & Diagnostics + Widgets + Search binding
+- [ ] HF: Quick Add Vehicle (admin stub)
+- [ ] PR‑5: Checkout 15' session hold + /checkout/prepare
+- [ ] PR‑6: Stripe Payment Intents (+ webhook)
+- [ ] PR‑7: PDF voucher with QR
+- [ ] PR‑8: Cron automations + email templates
