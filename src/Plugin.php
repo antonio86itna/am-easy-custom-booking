@@ -113,13 +113,42 @@ class Plugin {
 		return $schedules;
 	}
 
-	/**
-	 * Minutely cron tasks.
-	 *
-	 * @return void
-	 */
+		/**
+		 * Minutely cron tasks.
+		 *
+		 * @return void
+		 */
 	public static function cron_minutely() {
-		// Placeholder for minutely cron tasks.
+		global $wpdb;
+
+		$pending = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->prepare(
+				"SELECT id FROM {$wpdb->prefix}amcb_bookings WHERE status = %s AND hold_until < NOW()",
+				'pending'
+			)
+		);
+
+		if ( empty( $pending ) ) {
+			return;
+		}
+
+		$updated = $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->prepare(
+				"UPDATE {$wpdb->prefix}amcb_bookings SET status = %s WHERE status = %s AND hold_until < NOW()",
+				'expired_hold',
+				'pending'
+			)
+		);
+
+		if ( $updated ) {
+			error_log( // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				sprintf(
+				/* translators: %d: number of expired bookings. */
+					__( 'Expired %d pending bookings due to hold timeout.', 'amcb' ),
+					$updated
+				)
+			);
+		}
 	}
 
 	/**
