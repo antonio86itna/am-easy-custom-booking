@@ -14,13 +14,14 @@ class Migrations {
         /**
          * Current database schema version.
          *
-         * Versions:
-         * - 1.1.0 Initial schema.
-         * - 1.2.0 Added hold_until column to bookings table.
-         *
-         * @var string
-         */
-        const DB_VERSION = '1.2.0';
+        * Versions:
+        * - 1.1.0 Initial schema.
+        * - 1.2.0 Added hold_until column to bookings table.
+        * - 1.3.0 Added payment columns to bookings table.
+        *
+        * @var string
+        */
+        const DB_VERSION = '1.3.0';
 
 	/**
 	 * Retrieve SQL table schemas.
@@ -105,6 +106,10 @@ class Migrations {
             pickup_id bigint(20) unsigned NOT NULL DEFAULT 0,
             dropoff_id bigint(20) unsigned NOT NULL DEFAULT 0,
             hold_until datetime DEFAULT NULL,
+            payment_intent_id varchar(191) DEFAULT NULL,
+            paid_amount decimal(10,2) DEFAULT NULL,
+            payment_method varchar(50) DEFAULT NULL,
+            receipt_url varchar(191) DEFAULT NULL,
             created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
             updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY  (id),
