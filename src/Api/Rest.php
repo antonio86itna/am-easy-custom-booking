@@ -201,13 +201,26 @@ class Rest {
 		}
 
 		global $wpdb;
-		$table        = $wpdb->prefix . 'amcb_vehicles';
-		$placeholders = implode( ', ', array_fill( 0, count( $ids ), '%d' ) );
-		$sql          = "SELECT id, name, type, featured, featured_priority FROM $table WHERE id IN ($placeholders) ORDER BY featured DESC, featured_priority DESC, name ASC";
+		$vehicle_table = $wpdb->prefix . 'amcb_vehicles';
+		$placeholders  = implode( ', ', array_fill( 0, count( $ids ), '%d' ) );
+		$sql           = "SELECT id, name, type, featured, featured_priority FROM {$vehicle_table} WHERE id IN ({$placeholders}) ORDER BY featured DESC, featured_priority DESC, name ASC";
 
 		$rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->prepare( $sql, $ids ) // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		);
+
+		$price_table        = $wpdb->prefix . 'amcb_vehicle_prices';
+		$price_placeholders = implode( ', ', array_fill( 0, count( $ids ), '%d' ) );
+		$price_sql          = "SELECT vehicle_id, price FROM {$price_table} WHERE vehicle_id IN ({$price_placeholders}) AND %s BETWEEN date_from AND date_to ORDER BY vehicle_id ASC, date_from DESC";
+		$price_rows         = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->prepare( $price_sql, array_merge( $ids, array( $start_date ) ) ) // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		);
+		$prices             = array();
+		foreach ( $price_rows as $price_row ) {
+			if ( ! isset( $prices[ $price_row->vehicle_id ] ) ) {
+				$prices[ $price_row->vehicle_id ] = (float) $price_row->price;
+			}
+		}
 
 		$data = array();
 
@@ -218,6 +231,7 @@ class Rest {
 				'type'              => esc_html( $row->type ),
 				'featured'          => (int) $row->featured,
 				'featured_priority' => (int) $row->featured_priority,
+				'price_per_day'     => isset( $prices[ $row->id ] ) ? (float) $prices[ $row->id ] : 0.0,
 			);
 		}
 
