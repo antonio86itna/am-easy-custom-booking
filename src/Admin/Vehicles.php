@@ -1,4 +1,5 @@
-<?php // phpcs:ignore WordPress.Files.FileName.NotLowercase,WordPress.Files.FileName.InvalidClassFileName
+<?php
+// phpcs:ignoreFile
 /**
  * Vehicles admin page.
  *
@@ -211,37 +212,37 @@ class Vehicles {
 			);
 		}
 
-			$wpdb->insert(
-				$insurance_table,
-				array(
-					'vehicle_id' => $vehicle_id,
-					'name'       => 'Basic',
-					'price'      => 0,
-					'is_default' => 1,
-				),
-				array(
-					'%d',
-					'%s',
-					'%f',
-					'%d',
-				)
-			);
+                        $wpdb->insert(
+                                $insurance_table,
+                                array(
+                                        'vehicle_id'    => $vehicle_id,
+                                        'name'          => 'Basic',
+                                        'price_per_day' => 0,
+                                        'is_default'    => 1,
+                                ),
+                                array(
+                                        '%d',
+                                        '%s',
+                                        '%f',
+                                        '%d',
+                                )
+                        );
 
-			$wpdb->insert(
-				$insurance_table,
-				array(
-					'vehicle_id' => $vehicle_id,
-					'name'       => 'Premium',
-					'price'      => $premium_price,
-					'is_default' => 0,
-				),
-				array(
-					'%d',
-					'%s',
-					'%f',
-					'%d',
-				)
-			);
+                        $wpdb->insert(
+                                $insurance_table,
+                                array(
+                                        'vehicle_id'    => $vehicle_id,
+                                        'name'          => 'Premium',
+                                        'price_per_day' => $premium_price,
+                                        'is_default'    => 0,
+                                ),
+                                array(
+                                        '%d',
+                                        '%s',
+                                        '%f',
+                                        '%d',
+                                )
+                        );
 
 			$redirect = add_query_arg(
 				array(

@@ -45,16 +45,22 @@ class DemoSeeder {
                 $location_table  = $wpdb->prefix . 'amcb_locations';
 
 		// Vehicles.
-		$vehicles = array(
-			array(
-				'name' => 'Fiat 500',
-				'type' => 'car',
-			),
-			array(
-				'name' => 'Piaggio Vespa',
-				'type' => 'scooter',
-			),
-		);
+                $vehicles = array(
+                        array(
+                                'name'             => 'Fiat 500',
+                                'type'             => 'car',
+                                'stock_total'      => 5,
+                                'featured'         => 1,
+                                'featured_priority' => 10,
+                        ),
+                        array(
+                                'name'             => 'Piaggio Vespa',
+                                'type'             => 'scooter',
+                                'stock_total'      => 3,
+                                'featured'         => 0,
+                                'featured_priority' => 0,
+                        ),
+                );
 
                foreach ( $vehicles as $vehicle ) {
                        $exists = (int) $wpdb->get_var(
@@ -67,9 +73,12 @@ class DemoSeeder {
                        if ( 0 === $exists ) {
                                $wpdb->query(
                                        $wpdb->prepare(
-                                               "INSERT INTO {$vehicle_table} (name, type, status) VALUES (%s, %s, 'active')",
+                                               "INSERT INTO {$vehicle_table} (name, type, status, stock_total, featured, featured_priority) VALUES (%s, %s, 'active', %d, %d, %d)",
                                                $vehicle['name'],
-                                               $vehicle['type']
+                                               $vehicle['type'],
+                                               $vehicle['stock_total'],
+                                               $vehicle['featured'],
+                                               $vehicle['featured_priority']
                                        )
                                );
                        }
@@ -106,37 +115,69 @@ class DemoSeeder {
                        }
                }
 
-		// Insurances.
-		$insurances = array(
-			array(
-				'name'        => 'Basic Coverage',
-				'price'       => 10.0,
-				'description' => 'Basic insurance coverage.',
-			),
-			array(
-				'name'        => 'Full Coverage',
-				'price'       => 20.0,
-				'description' => 'Full insurance coverage.',
-			),
-		);
+                // Insurances per vehicle.
+                $vehicle_insurances = array(
+                        'Fiat 500'      => array(
+                                array(
+                                        'name'         => 'Basic Coverage',
+                                        'price_per_day' => 10.0,
+                                        'description'  => 'Basic insurance coverage.',
+                                        'is_default'    => 1,
+                                ),
+                                array(
+                                        'name'         => 'Full Coverage',
+                                        'price_per_day' => 20.0,
+                                        'description'  => 'Full insurance coverage.',
+                                        'is_default'    => 0,
+                                ),
+                        ),
+                        'Piaggio Vespa' => array(
+                                array(
+                                        'name'         => 'Basic Coverage',
+                                        'price_per_day' => 8.0,
+                                        'description'  => 'Basic insurance coverage.',
+                                        'is_default'    => 1,
+                                ),
+                                array(
+                                        'name'         => 'Full Coverage',
+                                        'price_per_day' => 15.0,
+                                        'description'  => 'Full insurance coverage.',
+                                        'is_default'    => 0,
+                                ),
+                        ),
+                );
 
-               foreach ( $insurances as $insurance ) {
-                       $exists = (int) $wpdb->get_var(
+               foreach ( $vehicle_insurances as $vehicle_name => $insurances ) {
+                       $vehicle_id = $wpdb->get_var(
                                $wpdb->prepare(
-                                       "SELECT COUNT(*) FROM {$insurance_table} WHERE name = %s",
-                                       $insurance['name']
+                                       "SELECT id FROM {$vehicle_table} WHERE name = %s",
+                                       $vehicle_name
                                )
                        );
 
-                       if ( 0 === $exists ) {
-                               $wpdb->query(
-                                       $wpdb->prepare(
-                                               "INSERT INTO {$insurance_table} (name, price, description) VALUES (%s, %f, %s)",
-                                               $insurance['name'],
-                                               $insurance['price'],
-                                               $insurance['description']
-                                       )
-                               );
+                       if ( $vehicle_id ) {
+                               foreach ( $insurances as $insurance ) {
+                                       $exists = (int) $wpdb->get_var(
+                                               $wpdb->prepare(
+                                                       "SELECT COUNT(*) FROM {$insurance_table} WHERE vehicle_id = %d AND name = %s",
+                                                       $vehicle_id,
+                                                       $insurance['name']
+                                               )
+                                       );
+
+                                       if ( 0 === $exists ) {
+                                               $wpdb->query(
+                                                       $wpdb->prepare(
+                                                               "INSERT INTO {$insurance_table} (vehicle_id, name, price_per_day, description, is_default) VALUES (%d, %s, %f, %s, %d)",
+                                                               $vehicle_id,
+                                                               $insurance['name'],
+                                                               $insurance['price_per_day'],
+                                                               $insurance['description'],
+                                                               $insurance['is_default']
+                                                       )
+                                               );
+                                       }
+                               }
                        }
                }
 
