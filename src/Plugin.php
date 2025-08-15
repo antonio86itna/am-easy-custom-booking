@@ -11,6 +11,7 @@ use AMCB\Admin\Menu;
 use AMCB\Admin\Roles;
 use AMCB\Admin\Settings;
 use AMCB\Admin\Tools;
+use AMCB\Admin\Vehicles;
 use AMCB\Api\Rest;
 use AMCB\Front\Shortcodes;
 use AMCB\Install\DemoSeeder;
@@ -19,6 +20,7 @@ use AMCB\Install\DemoSeeder;
  * Main plugin class.
  */
 class Plugin {
+
 	/**
 	 * Initialize plugin.
 	 *
@@ -41,17 +43,18 @@ class Plugin {
 		add_action( 'elementor/widgets/register', array( 'AMCB\\Elementor\\Plugin', 'register_widgets' ) );
 		add_action( 'elementor/elements/categories_registered', array( 'AMCB\\Elementor\\Plugin', 'register_category' ) );
 
-				// REST.
-				Rest::register();
+		// REST.
+		Rest::register();
 
-				// Admin.
+		// Admin.
 		if ( is_admin() ) {
-						DemoSeeder::init();
+			DemoSeeder::init();
 						Menu::register();
+						Vehicles::register();
 						Tools::register();
-						add_action( 'admin_init', array( Settings::class, 'settings' ) );
-						add_action( 'admin_init', array( Roles::class, 'ensure_caps' ) );
-						add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_assets' ) );
+			add_action( 'admin_init', array( Settings::class, 'settings' ) );
+			add_action( 'admin_init', array( Roles::class, 'ensure_caps' ) );
+			add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_assets' ) );
 		}
 	}
 
@@ -61,18 +64,18 @@ class Plugin {
 	 * @return void
 	 */
 	public static function assets() {
-			$ver = '0.1.0';
-			wp_register_style( 'amcb-frontend', plugins_url( '../assets/css/frontend.css', __FILE__ ), array(), $ver );
-			wp_register_script( 'amcb-frontend', plugins_url( '../assets/js/frontend.js', __FILE__ ), array( 'jquery' ), $ver, true );
-			wp_register_script( 'amcb-checkout', plugins_url( '../assets/js/checkout.js', __FILE__ ), array( 'jquery' ), $ver, true );
-			wp_localize_script(
-				'amcb-checkout',
-				'amcbCheckout',
-				array(
-					'restUrl' => esc_url_raw( rest_url( 'amcb/v1/checkout/price' ) ),
-					'nonce'   => wp_create_nonce( 'wp_rest' ),
-				)
-			);
+		$ver = '0.1.0';
+		wp_register_style( 'amcb-frontend', plugins_url( '../assets/css/frontend.css', __FILE__ ), array(), $ver );
+		wp_register_script( 'amcb-frontend', plugins_url( '../assets/js/frontend.js', __FILE__ ), array( 'jquery' ), $ver, true );
+		wp_register_script( 'amcb-checkout', plugins_url( '../assets/js/checkout.js', __FILE__ ), array( 'jquery' ), $ver, true );
+		wp_localize_script(
+			'amcb-checkout',
+			'amcbCheckout',
+			array(
+				'restUrl' => esc_url_raw( rest_url( 'amcb/v1/checkout/price' ) ),
+				'nonce'   => wp_create_nonce( 'wp_rest' ),
+			)
+		);
 	}
 
 	/**
@@ -98,7 +101,7 @@ class Plugin {
 	/**
 	 * Register cron schedules.
 	 *
-	 * @param array $schedules Schedules.
+	 * @param  array $schedules Schedules.
 	 * @return array
 	 */
 	public static function cron_schedules( $schedules ) {
