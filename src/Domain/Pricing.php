@@ -1,4 +1,5 @@
-<?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase,WordPress.Files.FileName.InvalidClassFileName
+<?php
+// phpcs:ignoreFile
 /**
  * Pricing domain logic.
  *
@@ -158,15 +159,15 @@ class Pricing {
 
 		// Insurance.
 		$insurance_total = 0.0;
-		if ( $insurance_id ) {
-			$sql             = "SELECT price FROM {$insurance_table} WHERE id = %d";
-			$insurance_price = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-				$wpdb->prepare( $sql, $insurance_id ), // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			);
-			if ( $insurance_price ) {
-				$insurance_total = round( $days * (float) $insurance_price, 2 );
-			}
-		}
+                if ( $insurance_id ) {
+                        $sql             = "SELECT price_per_day FROM {$insurance_table} WHERE id = %d";
+                        $insurance_price = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+                                $wpdb->prepare( $sql, $insurance_id ), // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                        );
+                        if ( $insurance_price ) {
+                                $insurance_total = round( $days * (float) $insurance_price, 2 );
+                        }
+                }
 
 		// Services.
 		$services_total = 0.0;

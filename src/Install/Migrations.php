@@ -16,7 +16,7 @@ class Migrations {
 	 *
 	 * @var string
 	 */
-	const DB_VERSION = '1.0.0';
+        const DB_VERSION = '1.1.0';
 
 	/**
 	 * Retrieve SQL table schemas.
@@ -30,11 +30,14 @@ class Migrations {
 
 		$tables = array();
 
-		$tables['vehicles'] = "CREATE TABLE {$prefix}vehicles (
+                $tables['vehicles'] = "CREATE TABLE {$prefix}vehicles (
             id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
             name varchar(191) NOT NULL,
             type varchar(50) NOT NULL DEFAULT '',
             status varchar(20) NOT NULL DEFAULT 'active',
+            stock_total int unsigned NOT NULL DEFAULT 0,
+            featured tinyint(1) NOT NULL DEFAULT 0,
+            featured_priority smallint unsigned NOT NULL DEFAULT 0,
             created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
             updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY  (id)
@@ -75,14 +78,17 @@ class Migrations {
             PRIMARY KEY  (id)
         ) {$charset_collate};";
 
-		$tables['insurances'] = "CREATE TABLE {$prefix}insurances (
+                $tables['insurances'] = "CREATE TABLE {$prefix}insurances (
             id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+            vehicle_id bigint(20) unsigned NOT NULL,
             name varchar(191) NOT NULL,
-            price decimal(10,2) NOT NULL DEFAULT 0,
+            price_per_day decimal(10,2) NOT NULL DEFAULT 0,
             description text,
+            is_default tinyint(1) NOT NULL DEFAULT 0,
             created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
             updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            PRIMARY KEY  (id)
+            PRIMARY KEY  (id),
+            KEY vehicle_id (vehicle_id)
         ) {$charset_collate};";
 
 		$tables['bookings'] = "CREATE TABLE {$prefix}bookings (
@@ -172,17 +178,17 @@ class Migrations {
 	 * Run database migrations if needed.
 	 */
 	public static function migrate() {
-		$installed = get_option( 'amcb_db_version' );
-		if ( self::DB_VERSION === $installed ) {
-			return;
-		}
+                $installed = get_option( 'amcb_db_version' );
+                if ( $installed && version_compare( $installed, self::DB_VERSION, '>=' ) ) {
+                        return;
+                }
 
-		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+                require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		foreach ( self::get_table_schemas() as $sql ) {
-			dbDelta( $sql );
-		}
+                foreach ( self::get_table_schemas() as $sql ) {
+                        dbDelta( $sql );
+                }
 
-		update_option( 'amcb_db_version', self::DB_VERSION );
-	}
+                update_option( 'amcb_db_version', self::DB_VERSION );
+        }
 }
