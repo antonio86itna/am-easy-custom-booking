@@ -62,26 +62,6 @@ If any day has **no coverage** → error `NO_RATE_COVERAGE`.
 `grand_total = subtotal_before_coupon - coupon_discount` (min 0).  
 Deposit mode: `deposit_amount = round(grand_total * deposit_percent/100, 2)`, `to_collect = grand_total - deposit_amount`.
 
-**Output example**
-```json
-{
-  "days": 3,
-  "segments": [
-    {"from":"2025-08-02","to":"2025-08-03","daily":60,"days":1,"total":60},
-    {"from":"2025-08-03","to":"2025-08-04","daily":60,"days":1,"total":60},
-    {"from":"2025-08-04","to":"2025-08-05","daily":40,"days":1,"total":40}
-  ],
-  "base_total": 160,
-  "long_rent_discount": 8,
-  "insurance_total": 24,
-  "services_total": 10,
-  "coupon_discount": 0,
-  "grand_total": 186,
-  "deposit_amount": 55.8,
-  "to_collect": 130.2,
-  "currency": "EUR"
-}
-
 **Roadmap to v0.2.0 (PR sequence)**
 
 Migrations + Tools + Demo (dbDelta, roles, cron, demo data)
@@ -131,3 +111,23 @@ QA checklist per PR
 - [ ] PR‑6: Stripe Payment Intents (+ webhook)
 - [ ] PR‑7: PDF voucher with QR
 - [ ] PR‑8: Cron automations + email templates
+
+**Output example**
+```json
+{
+  "days": 3,
+  "segments": [
+    {"from":"2025-08-02","to":"2025-08-03","daily":60,"days":1,"total":60},
+    {"from":"2025-08-03","to":"2025-08-04","daily":60,"days":1,"total":60},
+    {"from":"2025-08-04","to":"2025-08-05","daily":40,"days":1,"total":40}
+  ],
+  "base_total": 160,
+  "long_rent_discount": 8,
+  "insurance_total": 24,
+  "services_total": 10,
+  "coupon_discount": 0,
+  "grand_total": 186,
+  "deposit_amount": 55.8,
+  "to_collect": 130.2,
+  "currency": "EUR"
+}
