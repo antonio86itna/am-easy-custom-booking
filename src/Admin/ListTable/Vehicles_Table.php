@@ -19,8 +19,15 @@ class Vehicles_Table extends WP_List_Table {
 		 * @return void
 		 */
 	public function prepare_items() {
-			$this->items           = array();
-			$this->_column_headers = array( $this->get_columns(), array(), array() );
+		global $wpdb;
+
+				$table       = esc_sql( $wpdb->prefix . 'amcb_vehicles' );
+				$query       = $wpdb->prepare(
+					"SELECT * FROM {$table} ORDER BY featured DESC, featured_priority DESC, name ASC" // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				);
+				$this->items = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+
+		$this->_column_headers = array( $this->get_columns(), array(), array() );
 	}
 
 		/**
@@ -29,9 +36,29 @@ class Vehicles_Table extends WP_List_Table {
 		 * @return array
 		 */
 	public function get_columns() {
-			return array(
-				'title' => __( 'Title', 'amcb' ),
-			);
+		return array(
+			'name'              => __( 'Name', 'amcb' ),
+			'type'              => __( 'Type', 'amcb' ),
+			'stock_total'       => __( 'Stock total', 'amcb' ),
+			'featured'          => __( 'Featured', 'amcb' ),
+			'featured_priority' => __( 'Featured priority', 'amcb' ),
+		);
+	}
+
+	/**
+	 * Default column renderer.
+	 *
+	 * @param array  $item        Current item.
+	 * @param string $column_name Column name.
+	 *
+	 * @return string
+	 */
+	public function column_default( $item, $column_name ) {
+		if ( isset( $item[ $column_name ] ) ) {
+				return esc_html( $item[ $column_name ] );
+		}
+
+		return '';
 	}
 
 		/**
