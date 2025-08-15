@@ -21,6 +21,7 @@ class Activator {
      */
     public static function activate() {
         Migrations::migrate();
+        update_option( 'amcb_db_version', Migrations::DB_VERSION );
 
         if ( ! wp_next_scheduled( 'amcb_cron_minutely' ) ) {
             wp_schedule_event( time(), 'amcb_minutely', 'amcb_cron_minutely' );
